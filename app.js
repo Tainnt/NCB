@@ -9,13 +9,11 @@ var server = http.createServer(function(req, resp){
       resp.write('Contents you are looking for-not found');
       resp.end();
     }  else {
-      resp.writeHead(200, {
-        'Content-Type': 'text/html'
-      });
+      resp.writeHead(200, {'Content-Type': 'text/html'});
       resp.write(data.toString());
       resp.end();
     }
   });
 });
 
-server.listen(80);
+server.listen(8000);
