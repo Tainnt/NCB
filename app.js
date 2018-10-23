@@ -16,4 +16,4 @@ var server = http.createServer(function(req, resp){
   });
 });
 
-server.listen(8000);
+server.listen(80);
