@@ -1,0 +1,47 @@
+body{
+	height: 100%;
+	font-size: 20px;
+}
+#fullDiv{
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+#table{
+	text-align: center;
+	border-radius: 10px; 
+	border: 2px dotted red;
+	height: 300px;
+	width: 600px;
+	background-image: url(https://uphinhnhanh.com/images/2018/10/23/login.jpg);
+	background-repeat: no-repeat;
+	background-position: right;
+	background-size: 240px;
+	background-blend-mode:screen;
+}
+#frmDN{
+	color: #EA1E1E;
+	font-size: 40px;
+	font-weight: bold;
+}
+.txt{
+	background-color: #FAB3C0;
+	opacity: 0.8;
+	border-radius: 10px; 
+	border: 2px dotted red;
+	height: 25px;
+	width: 230px;
+	font-size: 20px;
+	padding-left: 4px;
+}
+#btnDN{
+	background-color: #FF0000;
+	color: #FFFFFF;
+	border-radius: 10px; 
+	height: 30px;
+	width: 100px;
+	font-weight: bold;
+}
+#hello{
+	color: #FF0000;
+}
