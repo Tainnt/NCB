@@ -1,29 +1,21 @@
-// // var createError = require('http-errors');
-// var express = require('express');
-// var path = require('path');
+var http = require('http');
+var fs = require('fs');
 
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
+var server = http.createServer(function(req, resp){
+  // Print the name of the file for which request is made.
+  fs.readFile("11.html",function(error, data){
+    if (error) {
+      resp.writeHead(404);
+      resp.write('Contents you are looking for-not found');
+      resp.end();
+    }  else {
+      resp.writeHead(200, {
+        'Content-Type': 'text/html'
+      });
+      resp.write(data.toString());
+      resp.end();
+    }
+  });
+});
 
-// var app = express();
-
-// // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
-
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.static(path.join(__dirname, 'public')));
-
-// app.use('/', indexRouter);
-// app.use('/users', usersRouter);
-
-// module.exports = app;
-
-var http = require("http");
-
-http.createServer(function(req, res){
-res.writeHead(200, {"Content-Type":"text/plain"});
-res.end("Hello World - Do an nhung can ban");
-
-}).listen(9999);
+server.listen(8000);
