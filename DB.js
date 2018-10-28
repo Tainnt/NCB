@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var conn = mysql.createConnection({
-    host: '52.10.86.144',
+    host: '123.21.128.46/32',
     user: 'root',
     password: '12345678',
     database: 'mysql-ncb',
@@ -13,7 +13,7 @@ conn.connect(function(err) {
     if (err)
         throw err.stack;
     else
-        console.log('Create table successful');
+        console.log('Connect successful');
     //nếu thành công
     // var sql = "CREATE TABLE player (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT , username varchar(30) not null, password varchar(10) not null)";
     // conn.query(sql, function(err) {
