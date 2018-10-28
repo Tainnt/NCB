@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var conn = mysql.createConnection({
-    host: 'arn:aws:rds:us-east-1:763444539927:db:mysql-ncb',
+    host: 'mysql-ncb.cdmcpyfgppxt.us-east-1.rds.amazonaws.com',
     user: 'root',
     password: '12345678',
     database: 'player',
@@ -21,19 +21,3 @@ conn.connect(function(err) {
     //     console.log('Create table successful');
     //});
 });
-//close connect
-// conn.end(function (err) {
-//     if (err) throw err;
-//     console.log('DB closes');
-// });
-//insert
-// conn.connect(function (err){
-//     //nếu có nỗi thì in ra
-//     if (err) throw err.stack;
-//     //nếu thành công
-//     var sql = "INSERT INTO player(username,password) values ('Tai', '123'),('Pha','456'), ('Men', '789')";
-//     conn.query(sql, function (err) {
-//         if (err) throw err;
-//         console.log('Insert successful');
-//     });
-// });
