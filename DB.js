@@ -8,10 +8,18 @@ var conn = mysql.createConnection({
 });
 
 //connect.
-conn.connect(function(err) {
-    //nếu có nỗi thì in ra
-    if (err)
-        throw err.stack;
-    else
-        console.log('Connect successful');
-});
+// conn.connect(function(err) {
+//     //nếu có nỗi thì in ra
+//     if (err)
+//         throw err.stack;
+//     else
+//         console.log('Connect successful');
+// });
+
+connection.query(
+    'SELECT * FROM battle_ship_player',
+    function(err, results, fields) {
+        console.log(results); // results contains rows returned by server
+        console.log(fields); // fields contains extra meta data about results, if available
+    }
+);
