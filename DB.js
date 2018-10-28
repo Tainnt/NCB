@@ -6,6 +6,7 @@ var conn = mysql.createConnection({
     password: '12345678',
     database: 'mysql-ncb',
 });
+
 //connect.
 conn.connect(function(err) {
     //nếu có nỗi thì in ra
