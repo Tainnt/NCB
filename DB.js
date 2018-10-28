@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var conn = mysql.createConnection({
-    host: 'mysql-ncb.cdmcpyfgppxt.us-east-1.rds.amazonaws.com',
+    host: '52.10.86.144',
     user: 'root',
     password: '12345678',
     database: 'mysql-ncb',
