@@ -7,7 +7,6 @@ var conn = mysql.createConnection({
     database: 'player',
 });
 
-connect.
 conn.connect(function(err) {
     if (err)
         throw err.stack;
