@@ -5,6 +5,7 @@ var conn = mysql.createConnection({
     user: 'root',
     password: '12345678',
     database: 'player',
+    connectTimeout: 30000
 });
 
 //connect.
