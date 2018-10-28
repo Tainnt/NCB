@@ -16,7 +16,7 @@ var conn = mysql.createConnection({
 //         console.log('Connect successful');
 // });
 
-connection.query(
+conn.query(
     'SELECT * FROM battle_ship_player',
     function(err, results, fields) {
         console.log(results); // results contains rows returned by server
