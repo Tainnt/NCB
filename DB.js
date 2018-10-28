@@ -14,10 +14,4 @@ conn.connect(function(err) {
         throw err.stack;
     else
         console.log('Connect successful');
-    //nếu thành công
-    // var sql = "CREATE TABLE player (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT , username varchar(30) not null, password varchar(10) not null)";
-    // conn.query(sql, function(err) {
-    //     if (err) throw err;
-    //     console.log('Create table successful');
-    //});
 });
