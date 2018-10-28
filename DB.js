@@ -1,11 +1,10 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 var conn = mysql.createConnection({
     host: 'mysql-ncb.cdmcpyfgppxt.us-east-1.rds.amazonaws.com',
     user: 'root',
     password: '12345678',
     database: 'player',
-    connectTimeout: 30000
 });
 
 //connect.
