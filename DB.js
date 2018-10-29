@@ -22,7 +22,7 @@ conn.connect(function(err) {
     //nếu có nỗi thì in ra
     if (err) throw err.stack;
     //nếu thành công
-    var sql = "INSERT INTO player(username,password) values ('Tai', '123'),('Pha','456'), ('Men', '789')";
+    var sql = "INSERT INTO player(username,password) values ('Tai', '123'),('Pha','123'), ('Men', '123')";
     conn.query(sql, function(err) {
         if (err) throw err;
         console.log('Insert successful');
