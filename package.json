@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Tainnt/NCB-Tai#readme",
   "dependencies": {
-    "mysql": "^2.16.0"
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.1"
   }
 }

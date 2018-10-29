@@ -1,10 +1,10 @@
 var mysql = require('mysql2');
 
 var conn = mysql.createConnection({
-    host: 'mysql-ncb.cdmcpyfgppxt.us-east-1.rds.amazonaws.com',
+    host: 'doanncb.cmgo5lgdr42o.us-west-2.rds.amazonaws.com',
     user: 'root',
     password: '12345678',
-    database: 'player',
+    database: 'battle_ship',
 });
 
 conn.connect(function(err) {
