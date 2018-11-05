@@ -167,7 +167,7 @@ function dohoashot2(newX, newY, data) { //data la gia tri gui qua 0-100.
 }
 //Ket noi den Socket server
 // var socket = io.connect("http://localhost:3000");
-var socket = io.connect("http://doanncb.ddns.net/:3000");
+var socket = io.connect("http://doanncb.ddns.net:3000");
 //CAP NHAT TRAN CHIEN
 socket.on('NewData', function(data) {
     console.log(data);

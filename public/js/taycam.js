@@ -1,5 +1,5 @@
 // var socket = io.connect("http://localhost:3000");
-var socket = io.connect("http://doanncb.ddns.net/:3000");
+var socket = io.connect("http://doanncb.ddns.net:3000");
 var BTNSEND = $("#shot");
 BTNSEND.click(function() {
     console.log("user click " + this.id);
