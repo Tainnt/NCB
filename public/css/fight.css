@@ -1,0 +1,11 @@
+body {
+	height: 600px;
+	background: #00f url(/images/backgroundfight.jpg)
+	no-repeat center;
+	position: relative;
+}
+
+body img{
+	height: 100px;
+	width: 100px;
+}
