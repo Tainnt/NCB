@@ -12,11 +12,11 @@ app.use(express.static("public"));
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
-var port = process.env.PORT || 9999;
+var port = process.env.PORT || 3000;
 app.use(express.static('public'));
 
-server.listen(9999, function() {
-    console.log('Server is running at port: 9999!')
+server.listen(3000, function() {
+    console.log('Server is running at port: 3000!')
 })
 
 app.get('/', function(request, response) {
