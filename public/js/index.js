@@ -17,7 +17,8 @@ $('#submit').on('click', function() {
         success: function(response) {
             if (response.data) {
                 alert('Đăng nhập thành công');
-                window.location = '/fight';
+                // window.location = '/fight';
+                window.location = '/create';
             } else
                 $("#errors").html(failHtml);
         }
@@ -26,4 +27,18 @@ $('#submit').on('click', function() {
 
 $('#register').on('click', function() {
     window.location = '/register';
+});
+
+document.getElementById("username").addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        document.getElementById("submit").click();
+    }
+});
+
+document.getElementById("password").addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        document.getElementById("submit").click();
+    }
 });

@@ -6,19 +6,6 @@ var pool = mysql.createConnection({
     password: '12345678',
     database: 'battle_ship',
 });
-// var conn = mysql.createConnection({
-//     host: 'localhost',
-//     user: 'root',
-//     password: '',
-//     database: 'doanncb',
-// });
-
-// var pool = mysql.createPool({
-//     host: 'localhost',
-//     user: 'root',
-//     password: '',
-//     database: 'doanncb',
-// });
 
 module.exports = {
     createTable: function() {
@@ -53,6 +40,19 @@ module.exports = {
             if (err)
                 throw err;
             console.log('Update successful');
+        });
+    },
+
+    findPlayer: function(name, callback) {
+        var sql = "SELECT id FROM player WHERE username= ?";
+        pool.query(sql, [name], function(err, result, fields) {
+            if (err)
+                throw err;
+            if (result[0] == null) {
+                callback(false);
+            } else {
+                callback(true);
+            }
         });
     },
 

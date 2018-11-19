@@ -1,0 +1,37 @@
+body {
+    height: 600px;
+    position: relative;
+}
+
+body img {
+    height: 100px;
+    width: 100px;
+}
+
+#ShipInfo {
+    float: right;
+}
+
+#ShipInfo div {
+    display: block;
+}
+
+#ship4 {
+    width: 240px;
+    height: 60px;
+}
+
+#ship3 {
+    width: 180px;
+    height: 60px;
+}
+
+#ship2 {
+    width: 120px;
+    height: 60px;
+}
+
+#ship1 {
+    width: 60px;
+    height: 60px;
+}

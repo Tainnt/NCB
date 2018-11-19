@@ -6,13 +6,10 @@ var bodyParser = require('body-parser');
 var db = require('./DB-v2');
 var app = express();
 app.use(express.static("public"));
-// app.set("view engine", "ejs");
-// app.set("views", "./views");
 
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
-// var port = process.env.PORT || 3000;
 app.use(express.static('public'));
 
 server.listen(3000, function() {
@@ -23,6 +20,10 @@ app.get('/', function(request, response) {
     response.sendFile(__dirname + '/views/index.html');
 });
 
+app.get('/create', function(request, response) {
+    response.sendFile(__dirname + '/views/createMap.html');
+});
+
 app.get('/fight', function(request, response) {
     response.sendFile(__dirname + '/views/fight.html');
 });
@@ -31,13 +32,9 @@ app.get('/register', function(request, response) {
     response.sendFile(__dirname + '/views/register.html');
 });
 
-app.get('/taycam', function(request, response) {
-    response.sendFile(__dirname + '/views/taycam.html');
+app.get('/gamepad', function(request, response) {
+    response.sendFile(__dirname + '/views/gamepad.html');
 });
-
-// app.get('/views/register.html', function(request, response) {
-//     response.sendFile(__dirname + '/views/register.html');
-// });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -62,8 +59,14 @@ app.post('/register', urlencodedParser, function(req, res) {
         pw: req.body.password
     };
     console.log(request);
-    db.insertPlayer(req.body.username, req.body.password);
-    res.send({ data: 1 });
+    db.findPlayer(req.body.username, function(isExist) {
+        if (isExist) {
+            res.send({ data: -1 });
+        } else {
+            db.insertPlayer(req.body.username, req.body.password);
+            res.send({ data: 1 });
+        }
+    })
 });
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
@@ -98,6 +101,7 @@ var controplayer2 = 1; // luu vi tri hien tai cua con tro player2 tat ca 100 vi 
 var controcontrol = 0; // luu du lieu tu tay cam gui len server UP/DOWN/LEFT/RIGHT/OK/CENCEL.
 var shot = 0; // kiem tra xem tai vi tri do co thuyen khong, gui len wed 1:co - 0:khong
 var error = 0;
+var key = 'O';
 
 
 io.on("connection", function(socket) {
@@ -110,7 +114,6 @@ io.on("connection", function(socket) {
         } else {
             XuLyDuLieuGuiLenP2(data.DATA)
             HienThiKetQuaLenAllClientP2();
-            console.log(controplayer2);
         }
 
     });
@@ -118,60 +121,68 @@ io.on("connection", function(socket) {
 
 
 function XuLyDuLieuGuiLenP1(controcontrol) {
-
     if (controcontrol == "L" || controcontrol == "R" || controcontrol == "U" || controcontrol == "D" || controcontrol == "O" || controcontrol == "C") {
         if (controcontrol == "L") {
-            if (controplayer1 == 1) {
-                controplayer1 = 100;
-            } else { controplayer1 -= 1; }
+            if (Math.abs(controplayer1 % 10) != 1) {
+                controplayer1 -= 1;
+            }
+            key = 'L';
         } else if (controcontrol == "R") {
-            if (controplayer1 == 100) {
-                controplayer1 = 1;
-            } else { controplayer1 += 1; }
+            if (Math.abs(controplayer1 % 10) != 0) {
+                controplayer1 += 1;
+            }
+            key = 'R';
         } else if (controcontrol == "U") {
-            if (Math.floor((controplayer1) / 10) == 0 || controplayer1 == 10) {
-                controplayer1 += 90;
-            } else { controplayer1 -= 10; }
+            if (Math.abs(Math.floor((controplayer1) / 10)) != 0) {
+                controplayer1 -= 10;
+            }
+            key = 'U';
         } else if (controcontrol == "D") {
-            if (Math.floor((controplayer1) / 10) == 9 || controplayer1 == 100) {
-                controplayer1 -= 90;
-            } else { controplayer1 += 10; }
+            if (Math.abs(Math.floor((controplayer1) / 10)) != 9) {
+                controplayer1 += 10;
+            }
+            key = 'D';
         } else if (controcontrol == "O") {
             shot = 1;
+            key = 'O';
+        } else if (controcontrol == "C") {
+            shot = -1;
+            key = 'C';
         }
     } else { error = 1; }
 }
 
 function XuLyDuLieuGuiLenP2(controcontrol) {
-
     if (controcontrol == "L" || controcontrol == "R" || controcontrol == "U" || controcontrol == "D" || controcontrol == "O" || controcontrol == "C") {
         if (controcontrol == "L") {
-            if (controplayer2 == 1) {
-                controplayer2 = 100;
-            } else { controplayer2 -= 1; }
+            if (Math.abs(controplayer2 % 10) != 1) {
+                controplayer2 -= 1;
+            }
         } else if (controcontrol == "R") {
-            if (controplayer2 == 100) {
-                controplayer2 = 1;
-            } else { controplayer2 += 1; }
+            if (Math.abs(controplayer2 % 10) != 0) {
+                controplayer2 += 1;
+            }
         } else if (controcontrol == "U") {
-            if (Math.floor((controplayer2) / 10) == 0 || controplayer2 == 10) {
-                controplayer2 += 90;
-            } else { controplayer2 -= 10; }
+            if (Math.abs(Math.floor((controplayer2) / 10)) != 0) {
+                controplayer2 -= 10;
+            }
         } else if (controcontrol == "D") {
-            if (Math.floor((controplayer2) / 10) == 9 || controplayer2 == 100) {
-                controplayer2 -= 90;
-            } else { controplayer2 += 10; }
+            if (Math.abs(Math.floor((controplayer2) / 10)) != 9) {
+                controplayer2 += 10;
+            }
         } else if (controcontrol == "O") {
             shot = 1;
+        } else if (controcontrol == "C") {
+            shot = -1;
         }
     } else { error = 1; }
 }
 
 function HienThiKetQuaLenAllClientP1() {
     if (tauchienplayer2_array[controplayer1 - 1] == 1) {
-        io.sockets.emit("NewData", { CONTRO: controplayer1, SHOT: shot, ERROR: error } /*{hinh:data, link:l}*/ );
+        io.sockets.emit("NewData", { CONTRO: controplayer1, SHOT: shot, ERROR: error, KEY: key });
     } else if (tauchienplayer2_array[controplayer1 - 1] == 0) {
-        io.sockets.emit("NewData", { CONTRO: -controplayer1, SHOT: shot, ERROR: error } /*{hinh:data, link:l}*/ );
+        io.sockets.emit("NewData", { CONTRO: -controplayer1, SHOT: shot, ERROR: error, KEY: key });
     }
     shot = 0;
     error = 0;
