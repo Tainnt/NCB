@@ -98,7 +98,7 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        STARTGAME(data_from_console, 2);
+        STARTGAME(data_from_console, 1);
     });
 });
 
@@ -107,8 +107,6 @@ function STARTGAME(TEXTDATA, PLAYER) {
         XuLyDuLieuGuiLenP1(TEXTDATA);
         HienThiKetQuaLenAllClientP1();
         KIEMTRAENDGAME();
-
-
     } else {
         XuLyDuLieuGuiLenP2(TEXTDATA)
         HienThiKetQuaLenAllClientP2();
