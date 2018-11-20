@@ -106,11 +106,11 @@ function STARTGAME(TEXTDATA, PLAYER) {
     if (PLAYER == 1) {
         XuLyDuLieuGuiLenP1(TEXTDATA);
         HienThiKetQuaLenAllClientP1();
-        KIEMTRAENDGAME();
+        // KIEMTRAENDGAME();
     } else {
         XuLyDuLieuGuiLenP2(TEXTDATA)
         HienThiKetQuaLenAllClientP2();
-        KIEMTRAENDGAME();
+        // KIEMTRAENDGAME();
 
     }
 }
