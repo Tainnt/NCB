@@ -98,10 +98,24 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        // STARTGAME(data_from_console, 2);
+        STARTGAME(data_from_console, 2);
     });
 });
 
+function STARTGAME(TEXTDATA, PLAYER) {
+    if (PLAYER == 1) {
+        XuLyDuLieuGuiLenP1(TEXTDATA);
+        HienThiKetQuaLenAllClientP1();
+        KIEMTRAENDGAME();
+
+
+    } else {
+        XuLyDuLieuGuiLenP2(TEXTDATA)
+        HienThiKetQuaLenAllClientP2();
+        KIEMTRAENDGAME();
+
+    }
+}
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -138,20 +152,19 @@ var error = 0;
 var key = 'O';
 
 
-io.on("connection", function(socket) {
-    console.log("Co nguoi ket noi server, socket: " + socket.id);
-    socket.on('SendTextToSerVer', function(data) {
-        console.log(data);
-        if (data.P == 1) {
-            XuLyDuLieuGuiLenP1(data.DATA);
-            HienThiKetQuaLenAllClientP1();
-        } else {
-            XuLyDuLieuGuiLenP2(data.DATA)
-            HienThiKetQuaLenAllClientP2();
-        }
-
-    });
-});
+// io.on("connection", function(socket) {
+//     console.log("Co nguoi ket noi server, socket: " + socket.id);
+//     socket.on('SendTextToSerVer', function(data) {
+//         console.log(data);
+//         if (data.P == 1) {
+//             XuLyDuLieuGuiLenP1(data.DATA);
+//             HienThiKetQuaLenAllClientP1();
+//         } else {
+//             XuLyDuLieuGuiLenP2(data.DATA)
+//             HienThiKetQuaLenAllClientP2();
+//         }
+//     });
+// });
 
 
 function XuLyDuLieuGuiLenP1(controcontrol) {
