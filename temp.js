@@ -68,40 +68,6 @@ app.post('/register', urlencodedParser, function(req, res) {
         }
     })
 });
-
-var data_from_console;
-app.post('/', function(request, response) {
-    const { headers, method, url } = request;
-    let body = [];
-    request.on('error', (err) => {
-      console.error(err);
-    }).on('data', (chunk) => {
-      body.push(chunk);
-    }).on('end', () => {
-      body = Buffer.concat(body).toString();
-      // BEGINNING OF NEW STUFF
-  
-      response.on('error', (err) => {
-        console.error(err);
-      });
-  
-      response.statusCode = 200;
-      response.setHeader('Content-Type', 'application/json');
-      // Note: the 2 lines above could be replaced with this next one:
-      // response.writeHead(200, {'Content-Type': 'application/json'})
-  
-      //const responseBody = { headers, method, url, body };
-      //PHA const responseBody = {body};
-      const responseBody = body;
-  
-      //post_data = JSON.stringify(responseBody);
-      data_from_console = JSON.stringify(responseBody);
-      console.log(data_from_console);
-
-        STARTGAME(data_from_console, 2);
-    });
-  });
-
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -154,79 +120,62 @@ io.on("connection", function(socket) {
 });
 
 
-function XuLyDuLieuGuiLenP1(controcontrol){
-
-    if(controcontrol=="\"=L\""||controcontrol=="\"=R\""||controcontrol=="\"=U\"" ||controcontrol=="\"=D\""||controcontrol=="\"=O\"" ||controcontrol=="\"=C\"")
-        {
-           if(controcontrol=="\"=L\"")
-           {
-                if(controplayer1==1)
-                {
-                controplayer1=100;
-                }
-                else{controplayer1-=1;}
-            }else if(controcontrol=="\"=R\"")
-            {
-                if(controplayer1==100)
-                {
-                controplayer1=1;
-                }
-                else{controplayer1+=1;}
-            }else if(controcontrol=="\"=U\"")
-            {
-                if(Math.floor((controplayer1)/10)==0 || controplayer1==10)
-                {
-                controplayer1+=90;
-                } else{controplayer1-=10;}
-            }else if(controcontrol=="\"=D\"")
-            {
-                if(Math.floor((controplayer1)/10)==9 || controplayer1==100)
-                {
-                controplayer1-=90;
-                } else{controplayer1+=10;}
-            }else if(controcontrol=="\"=O\"")
-            {
-                shot =1;
+function XuLyDuLieuGuiLenP1(controcontrol) {
+    if (controcontrol == "L" || controcontrol == "R" || controcontrol == "U" || controcontrol == "D" || controcontrol == "O" || controcontrol == "C") {
+        if (controcontrol == "L") {
+            if (Math.abs(controplayer1 % 10) != 1) {
+                controplayer1 -= 1;
             }
-        } else {error=1;}
-    }
-
-
-function XuLyDuLieuGuiLenP2(controcontrol){
-
-if(controcontrol=="\"=L\""||controcontrol=="\"=R\""||controcontrol=="\"=U\"" ||controcontrol=="\"=D\""||controcontrol=="\"=O\"" ||controcontrol=="\"=C\"")
-    {
-       if(controcontrol=="\"=L\"")
-       {
-            if(controplayer2==1)
-            {
-            controplayer2=100;
+            key = 'L';
+        } else if (controcontrol == "R") {
+            if (Math.abs(controplayer1 % 10) != 0) {
+                controplayer1 += 1;
             }
-            else{controplayer2-=1;}
-        }else if(controcontrol=="\"=R\"")
-        {
-            if(controplayer2==100)
-            {
-            controplayer2=1;
+            key = 'R';
+        } else if (controcontrol == "U") {
+            if (Math.abs(Math.floor((controplayer1) / 10)) != 0) {
+                controplayer1 -= 10;
             }
-            else{controplayer2+=1;}
-        }else if(controcontrol=="\"=U\"")
-        {
-            if(Math.floor((controplayer2)/10)==0 || controplayer2==10)
-            {
-            controplayer2+=90;
-            } else{controplayer2-=10;}
-        }else if(controcontrol=="\"=D\"")
-        {
-            if(Math.floor((controplayer2)/10)==9 || controplayer2==100)
-            {
-            controplayer2-=90;
-            } else{controplayer2+=10;}
-        }else if(controcontrol=="\"=O\"")
-        {
-            shot =1;
+            key = 'U';
+        } else if (controcontrol == "D") {
+            if (Math.abs(Math.floor((controplayer1) / 10)) != 9) {
+                controplayer1 += 10;
+            }
+            key = 'D';
+        } else if (controcontrol == "O") {
+            shot = 1;
+            key = 'O';
+        } else if (controcontrol == "C") {
+            shot = -1;
+            key = 'C';
         }
-    } else {error=1;}
+    } else { error = 1; }
+}
+
+function XuLyDuLieuGuiLenP2(controcontrol) {
+    if (controcontrol == "L" || controcontrol == "R" || controcontrol == "U" || controcontrol == "D" || controcontrol == "O" || controcontrol == "C") {
+        if (controcontrol == "L") {
+            if (Math.abs(controplayer2 % 10) != 1) {
+                controplayer2 -= 1;
+            }
+        } else if (controcontrol == "R") {
+            if (Math.abs(controplayer2 % 10) != 0) {
+                controplayer2 += 1;
+            }
+        } else if (controcontrol == "U") {
+            if (Math.abs(Math.floor((controplayer2) / 10)) != 0) {
+                controplayer2 -= 10;
+            }
+        } else if (controcontrol == "D") {
+            if (Math.abs(Math.floor((controplayer2) / 10)) != 9) {
+                controplayer2 += 10;
+            }
+        } else if (controcontrol == "O") {
+            shot = 1;
+        } else if (controcontrol == "C") {
+            shot = -1;
+        }
+    } else { error = 1; }
 }
 
 function HienThiKetQuaLenAllClientP1() {
