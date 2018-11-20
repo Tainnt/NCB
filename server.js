@@ -98,7 +98,7 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        STARTGAME(data_from_console, 2);
+        // STARTGAME(data_from_console, 2);
     });
 });
 
@@ -155,7 +155,6 @@ io.on("connection", function(socket) {
 
 
 function XuLyDuLieuGuiLenP1(controcontrol) {
-
     if (controcontrol == "\"=L\"" || controcontrol == "\"=R\"" || controcontrol == "\"=U\"" || controcontrol == "\"=D\"" || controcontrol == "\"=O\"" || controcontrol == "\"=C\"") {
         if (controcontrol == "\"=L\"") {
             if (Math.abs(controplayer1 % 10) != 1) {
