@@ -1,8 +1,8 @@
 var mysql = require('mysql');
 
 var pool = mysql.createConnection({
-    host: 'doanncb.cmgo5lgdr42o.us-west-2.rds.amazonaws.com',
-    user: 'root',
+    host: 'db4free.net',
+    user: 'tainnt',
     password: '12345678',
     database: 'battle_ship',
 });
