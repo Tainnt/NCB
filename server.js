@@ -14,10 +14,14 @@ app.use(express.static('public'));
 
 server.listen(3000, function() {
     console.log('Server is running at port: 3000!')
-})
+});
 
 app.get('/', function(request, response) {
     response.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/room', function(request, response) {
+    response.sendFile(__dirname + '/views/room.html');
 });
 
 app.get('/create', function(request, response) {
@@ -98,7 +102,8 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        STARTGAME(data_from_console, 1);
+        // STARTGAME(data_from_console, 1);
+        // JOINROOM(data.DATA);
     });
 });
 
@@ -111,15 +116,25 @@ function STARTGAME(TEXTDATA, PLAYER) {
         XuLyDuLieuGuiLenP2(TEXTDATA)
         HienThiKetQuaLenAllClientP2();
         // KIEMTRAENDGAME();
-
     }
 }
+
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
 ///////////////////////////////////////////////////////
 
+var urlArr = ['room', 'create', 'fight'];
+var UrlSocketID = [
+    ['a1', 'b1', 'c1'],
+    ['a2', 'b2', 'c2'],
+    [],
+    []
+];
+var p1UrlSocketID = [];
+var NumOfPlayer = 0;
+
 //so do tau chien cua player1 1:co - 0:khong
-var tauchienplayer1_array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+var p1Ship = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -130,7 +145,7 @@ var tauchienplayer1_array = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 ];
-var tauchienplayer2_array = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+var p2Ship = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -149,20 +164,70 @@ var shot = 0; // kiem tra xem tai vi tri do co thuyen khong, gui len wed 1:co - 
 var error = 0;
 var key = 'O';
 
+var result = 'none';
+var controsophonghientai = 1; // chua con tro chi so phong hien tai
+var phong = [0, 0, 0]; // chua mang phong
 
-// io.on("connection", function(socket) {
-//     console.log("Co nguoi ket noi server, socket: " + socket.id);
-//     socket.on('SendTextToSerVer', function(data) {
-//         console.log(data);
-//         if (data.P == 1) {
-//             XuLyDuLieuGuiLenP1(data.DATA);
-//             HienThiKetQuaLenAllClientP1();
-//         } else {
-//             XuLyDuLieuGuiLenP2(data.DATA)
-//             HienThiKetQuaLenAllClientP2();
-//         }
-//     });
-// });
+function JOINROOM(TEXTDATA) {
+    result = 'none';
+    if (TEXTDATA == "\"=U\"" && controsophonghientai > 1) {
+        controsophonghientai -= 1;
+    }
+    if (TEXTDATA == "\"=D\"" && controsophonghientai < 3) {
+        controsophonghientai += 1;
+    }
+    if (TEXTDATA == "\"=O\"") {
+        if (phong[controsophonghientai - 1] < 2) {
+            console.log("Ban da vao phong " + controsophonghientai);
+            phong[controsophonghientai - 1] += 1;
+            result = 'ok';
+        } else if (phong[controsophonghientai - 1] == 2) {
+            result = 'full';
+        }
+    }
+    console.log(phong);
+    io.sockets.emit("ROOM", { POIN: controsophonghientai, PHONG: phong, RESULT: result });
+}
+
+io.on("connection", function(socket) {
+    socket.emit("NumOfPlayerInRoom", { PHONG: phong });
+    socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
+    console.log("Co nguoi ket noi server, socket: " + socket.id);
+    var url = socket.handshake.headers.referer;
+
+    // for (let index = 0; index < urlArr.length; index++) {
+    //     if (url.includes(urlArr[index])) {
+    //         if (UrlSocketID[NumOfPlayer][index] =='') {
+    //             NumOfPlayer++;
+    //         }
+    //         UrlSocketID[NumOfPlayer][index] = socket.id;
+    //     }
+    // }
+    if (UrlSocketID[2][0] == null)
+        console.log(1);
+    else
+        console.log(2);
+    // console.log(UrlSocketID);
+
+    socket.on('SendTextToSerVer', function(data) {
+        console.log(data);
+
+        STARTGAME(data.DATA, data.P);
+        JOINROOM(data.DATA);
+        //RESTARTGAME();
+
+    });
+    socket.on('sendShipPos', function(data) {
+        if (data.player == 1) {
+            p1Ship = data.Arr;
+            console.log('added to p1Ship');
+        } else if (data.player == 2) {
+            p2Ship = data.Arr;
+            console.log('added to p2Ship');
+        } else
+            console.log('Khong tim thay tau');
+    });
+});
 
 
 function XuLyDuLieuGuiLenP1(controcontrol) {
@@ -199,44 +264,51 @@ function XuLyDuLieuGuiLenP1(controcontrol) {
 
 
 function XuLyDuLieuGuiLenP2(controcontrol) {
-
     if (controcontrol == "\"=L\"" || controcontrol == "\"=R\"" || controcontrol == "\"=U\"" || controcontrol == "\"=D\"" || controcontrol == "\"=O\"" || controcontrol == "\"=C\"") {
         if (controcontrol == "\"=L\"") {
-            if (controplayer2 == 1) {
-                controplayer2 = 100;
-            } else { controplayer2 -= 1; }
+            if (Math.abs(controplayer2 % 10) != 1) {
+                controplayer2 -= 1;
+            }
+            key = 'L';
         } else if (controcontrol == "\"=R\"") {
-            if (controplayer2 == 100) {
-                controplayer2 = 1;
-            } else { controplayer2 += 1; }
+            if (Math.abs(controplayer2 % 10) != 0) {
+                controplayer2 += 1;
+            }
+            key = 'R';
         } else if (controcontrol == "\"=U\"") {
-            if (Math.floor((controplayer2) / 10) == 0 || controplayer2 == 10) {
-                controplayer2 += 90;
-            } else { controplayer2 -= 10; }
+            if (Math.abs(Math.floor((controplayer2) / 10)) != 0) {
+                controplayer2 -= 10;
+            }
+            key = 'U';
         } else if (controcontrol == "\"=D\"") {
-            if (Math.floor((controplayer2) / 10) == 9 || controplayer2 == 100) {
-                controplayer2 -= 90;
-            } else { controplayer2 += 10; }
+            if (Math.abs(Math.floor((controplayer2) / 10)) != 9) {
+                controplayer2 += 10;
+            }
+            key = 'D';
         } else if (controcontrol == "\"=O\"") {
             shot = 1;
+            key = 'O';
+        } else if (controcontrol == "\"=C\"") {
+            shot = 1;
+            key = 'C';
         }
     } else { error = 1; }
 }
 
 function HienThiKetQuaLenAllClientP1() {
-    if (tauchienplayer2_array[controplayer1 - 1] == 1) {
-        io.sockets.emit("NewData", { CONTRO: controplayer1, SHOT: shot, ERROR: error, KEY: key });
-    } else if (tauchienplayer2_array[controplayer1 - 1] == 0) {
-        io.sockets.emit("NewData", { CONTRO: -controplayer1, SHOT: shot, ERROR: error, KEY: key });
+    if (p2Ship[controplayer1 - 1] != 'N') {
+        io.sockets.emit("NewData", { CONTRO: controplayer1, SHOT: shot, ERROR: error, KEY: key, SHIP: p1Ship });
+    } else {
+        io.sockets.emit("NewData", { CONTRO: -controplayer1, SHOT: shot, ERROR: error, KEY: key, SHIP: p1Ship });
     }
     shot = 0;
     error = 0;
 }
 
 function HienThiKetQuaLenAllClientP2() {
-    if (tauchienplayer1_array[controplayer2 - 1] == 1) {
+    if (p1Ship[controplayer2 - 1] != 'N') {
         io.sockets.emit("NewData2", { CONTRO: controplayer2, SHOT: shot, ERROR: error } /*{hinh:data, link:l}*/ );
-    } else if (tauchienplayer1_array[controplayer2 - 1] == 0) {
+    } else {
         io.sockets.emit("NewData2", { CONTRO: -controplayer2, SHOT: shot, ERROR: error } /*{hinh:data, link:l}*/ );
     }
     shot = 0;

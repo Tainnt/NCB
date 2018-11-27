@@ -2,7 +2,7 @@
 var table = [10, 70, 130, 190, 250, 310, 370, 430, 490, 550];
 var table = [10, 70, 130, 190, 250, 310, 370, 430, 490, 550];
 
-var shipLengthArr = [4, 4, 3, 3, 2, 2, 1];
+var shipLengthArr = [4, 3];
 var shipNameR = [document.getElementById("r2"), document.getElementById("r3"), document.getElementById("r4")];
 var shipNameD = [document.getElementById("d2"), document.getElementById("d3"), document.getElementById("d4")];
 var label = [document.getElementById("ship4Info"), document.getElementById("ship3Info"), document.getElementById("ship2Info"), document.getElementById("ship1Info")];
@@ -330,4 +330,5 @@ socket.on('NewData', function(data) {
 
 $('#btn').on('click', function() {
     window.location = '/fight';
+    socket.emit("sendShipPos", { Arr: shipPosArr, player: 1 });
 });

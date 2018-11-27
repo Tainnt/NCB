@@ -17,8 +17,7 @@ $('#submit').on('click', function() {
         success: function(response) {
             if (response.data) {
                 alert('Đăng nhập thành công');
-                // window.location = '/fight';
-                window.location = '/create';
+                window.location = '/room';
             } else
                 $("#errors").html(failHtml);
         }

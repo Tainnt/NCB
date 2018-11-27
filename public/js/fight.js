@@ -16,6 +16,7 @@ var shotorno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ];
+
 //lay thong tin
 var c = document.getElementById("player1");
 var hieuung = document.getElementById("hieuungshot");
@@ -37,6 +38,15 @@ var mtieuco = document.getElementById("mtco");
 var mtieuko = document.getElementById("mtko");
 var chucmung = document.getElementById("chucmung");
 var chucmayman = document.getElementById("chucmayman");
+
+var r1 = document.getElementById("r1");
+var r2 = document.getElementById("r2");
+var r3 = document.getElementById("r3");
+var r4 = document.getElementById("r4");
+
+var d2 = document.getElementById("d2");
+var d3 = document.getElementById("d3");
+var d4 = document.getElementById("d4");
 //khai bao bien
 const toadophaoXplayer1 = 310;
 const toadophaoYplayer1 = 310;
@@ -166,78 +176,74 @@ function dohoashot2(newX, newY, data) { //data la gia tri gui qua 0-100.
     }, 1)
 }
 
+function LoadShip(start, end, arr) {
+    for (var i = start; i <= end; i++) {
+        switch (arr[i]) {
+            case 'S':
+                ctx.drawImage(r1, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60, 60);
+                break;
+            case 'D2':
+                ctx.drawImage(d2, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60, 60 * 2);
+                break;
+            case 'D3':
+                ctx.drawImage(d3, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60, 60 * 3);
+                break;
+            case 'D4':
+                ctx.drawImage(d4, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60, 60 * 4);
+                break;
+            case 'R2':
+                ctx.drawImage(r2, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60 * 2, 60);
+                break;
+            case 'R3':
+                ctx.drawImage(r3, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60 * 3, 60);
+                break;
+            case 'R4':
+                ctx.drawImage(r4, toadoyplayer1[i % 10], toadoyplayer1[Math.floor(i / 10)], 60 * 4, 60);
+                break;
+            default:
+                break;
+        }
+    }
+}
 //Ket noi den Socket server
 var socket = io.connect("http://doanncb.ddns.net:3000");
+
+socket.on('ShipPos', function(data) {
+    LoadShip(0, 99, data.P1);
+});
+
 //CAP NHAT TRAN CHIEN
-// socket.on('NewData', function(data) {
-//     console.log(data);
-//     //alert(data.CONTRO);
-//     var requestData = Math.abs(data.CONTRO);
-//     if (data.SHOT) {
-//         if (shotorno[(Math.abs(requestData - 1))] == 0) {
-//             dohoashot(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], data.CONTRO);
-//             shotorno[(Math.abs(requestData - 1))] += 1;
-//         } else {
-//             alert("Chỗ này bạn bắn rồi!");
-//             dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
-//         }
+socket.on('NewData', function(data) {
+    console.log(data);
+    //alert(data.CONTRO);
+    var requestData = Math.abs(data.CONTRO);
+    // LoadShip(0, 99, data.SHIP);
+    if (data.SHOT) {
+        if (shotorno[(Math.abs(requestData - 1))] == 0) {
+            dohoashot(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], data.CONTRO);
+            shotorno[(Math.abs(requestData - 1))] += 1;
+        } else {
+            // alert("Chỗ này bạn bắn rồi!");
+            dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
+        }
+    } else {
+        dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
+    }
+});
 
-//     } else {
-//         dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
-//     }
-// });
-// socket.on('NewData2', function(data) {
-//     console.log(data);
-//     //alert(data.CONTRO);
-//     var requestData = Math.abs(data.CONTRO);
-//     if (data.SHOT) {
-//         if (shotorno[(Math.abs(requestData - 1))] == 0) {
-//             dohoashot2(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], data.CONTRO);
-//             shotorno[(Math.abs(requestData - 1))] += 1;
-//         } else {
-//             alert("Chỗ này bạn bắn rồi!");
-//             dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
-//         }
-
-//     } else {
-//         dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
-//     }
-// });
-//su kien click nut
-// var BTNSEND = $("#shot");
-//     BTNSEND.click(function(){
-//         console.log("user click " + this.id);
-//         TEXTDATA = $('#textnhanduoc').val();
-//         socket.emit('SendTextToSerVer', TEXTDATA);
-//         });
-// nhan su kien click
-// $('#shot').on('click', function() {
-//     var x = $('#toadox').val(),
-//         y = $('#textnhanduoc').val();
-//     if (x != '' && y != '') {
-//         $.ajax({
-//             type: 'POST',
-//             url: '/fight',
-//             data: { toadox: x, toadoy: y },
-//             dataType: 'json',
-//             async: false,
-//             success: function(response) {
-//             //alert(response.data);
-//             var requestData=Math.abs(response.data);
-//             if(response.data2)
-//             {   if(shotorno[(Math.abs(requestData-1))]==0)
-//                 {dohoashot(toadoxplayer2[(Math.abs(requestData-1))%10],toadoyplayer2[Math.floor((Math.abs(requestData-1))/10)],response.data);
-//                     shotorno[(Math.abs(requestData-1))]+=1;}
-//                 else{alert("Bắn rồi mà bắn gì nữa bạn");
-//                     dohoamuctieu(toadoxplayer2[(Math.abs(requestData-1))%10],toadoyplayer2[Math.floor((Math.abs(requestData-1))/10)],1)
-//                     }
-
-//             }else{
-//                 dohoamuctieu(toadoxplayer2[(Math.abs(requestData-1))%10],toadoyplayer2[Math.floor((Math.abs(requestData-1))/10)],shotorno[ Math.abs(requestData-1)])
-//             }
-//          }
-//          });
-//      } else {
-//          $("#errors").empty().append(failHtml);
-//      }
-// });
+socket.on('NewData2', function(data) {
+    console.log(data);
+    //alert(data.CONTRO);
+    var requestData = Math.abs(data.CONTRO);
+    if (data.SHOT) {
+        if (shotorno[(Math.abs(requestData - 1))] == 0) {
+            dohoashot2(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], data.CONTRO);
+            shotorno[(Math.abs(requestData - 1))] += 1;
+        } else {
+            // alert("Chỗ này bạn bắn rồi!");
+            dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
+        }
+    } else {
+        dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
+    }
+});
