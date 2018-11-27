@@ -103,7 +103,7 @@ app.post('/', function(request, response) {
         console.log(data_from_console);
 
         STARTGAME(data_from_console, 1);
-        JOINROOM(data.DATA);
+
     });
 });
 
@@ -117,6 +117,7 @@ function STARTGAME(TEXTDATA, PLAYER) {
         HienThiKetQuaLenAllClientP2();
         // KIEMTRAENDGAME();
     }
+    JOINROOM(TEXTDATA);
 }
 
 ////////////////////////////////////////////////////////
@@ -203,10 +204,11 @@ io.on("connection", function(socket) {
     //         UrlSocketID[NumOfPlayer][index] = socket.id;
     //     }
     // }
-    if (UrlSocketID[2][0] == null)
-        console.log(1);
-    else
-        console.log(2);
+    console.log(url);
+    // if (UrlSocketID[2][0] == null)
+    //     console.log(1);
+    // else
+    //     console.log(2);
     // console.log(UrlSocketID);
 
     socket.on('SendTextToSerVer', function(data) {
