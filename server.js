@@ -172,7 +172,37 @@ app.post('/', function(request, response) {
 });
 
 app.post('/hit', function(request, response) {
-    response.send({ data: 'H:O' });
+    const { headers, method, url } = request;
+    let body = [];
+    request.on('error', (err) => {
+        console.error(err);
+    }).on('data', (chunk) => {
+        body.push(chunk);
+    }).on('end', () => {
+        body = Buffer.concat(body).toString();
+        // BEGINNING OF NEW STUFF
+
+        response.on('error', (err) => {
+            console.error(err);
+        });
+
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'application/json');
+        // Note: the 2 lines above could be replaced with this next one:
+        // response.writeHead(200, {'Content-Type': 'application/json'})
+
+        //const responseBody = { headers, method, url, body };
+        //PHA const responseBody = {body};
+        const responseBody = "H:O";
+        post_data = JSON.stringify(responseBody);
+        response.send(post_data);
+        //post_data = JSON.stringify(responseBody);
+        // data_from_console = JSON.stringify(responseBody);
+        // console.log(data_from_console);
+
+        // STARTGAME(data_from_console, 1);
+        // JOINROOM(data.DATA);
+    });
 });
 
 function STARTGAME(TEXTDATA, PLAYER) {
