@@ -42,6 +42,9 @@ var orientation = false;
 var tempPointer = 0;
 var tempKey = 'X';
 
+// document.cookie = "username=framgia";
+console.log(document.cookie);
+
 function InitPage() {
     var count = 0;
     var num = 4;
@@ -231,7 +234,7 @@ function DeleteShip(pt) {
 }
 
 //Ket noi den Socket server
-var socket = io.connect("http://doanncb.ddns.net:3000");
+var socket = io.connect("http://localhost:3000");
 //CAP NHAT TRAN CHIEN
 socket.on('NewData', function(data) {
     var pt = Math.abs(data.CONTRO) - 1;

@@ -2,15 +2,46 @@
 /////////////PHẦN HOAT DONG SERVER/////////////////////
 //////////////////////////////////////////////////////
 var express = require("express");
+const parseurl = require('parseurl')
 var bodyParser = require('body-parser');
+const session = require('express-session')
 var db = require('./DB-v2');
 var app = express();
-app.use(express.static("public"));
+
+var onlineUser = [];
+let sess;
+
 
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
-app.use(express.static('public'));
+// app.use(bodyParser.urlencoded({ extended: true }));
+// parse application/json
+app.use(bodyParser.json());
+app.use(express.static('public'));;
+
+app.use(session({
+    secret: 'doraemon',
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 300000
+    }
+}));
+
+app.use(function(req, res, next) {
+    if (!req.session.views) {
+        req.session.views = {}
+    }
+
+    // // get the url pathname
+    // const pathname = parseurl(req).pathname
+
+    // // count the views
+    // req.session.views[pathname] = (req.session.views[pathname] || 0) + 1
+    // console.log(req.session.views[pathname])
+    next();
+});
 
 server.listen(3000, function() {
     console.log('Server is running at port: 3000!')
@@ -21,15 +52,26 @@ app.get('/', function(request, response) {
 });
 
 app.get('/room', function(request, response) {
-    response.sendFile(__dirname + '/views/room.html');
+    sess = request.session;
+    console.log('room', sess.id, ' ', sess.username);
+    sess.username ? response.sendFile(__dirname + '/views/room.html') : response.redirect('/');
+    // response.redirect('/main');
+    // sess.username ? response.render('admin', { username: sess.username }) : response.render('login');
+    // response.sendFile(__dirname + '/views/room.html');
 });
 
 app.get('/create', function(request, response) {
-    response.sendFile(__dirname + '/views/createMap.html');
+    sess = request.session;
+    console.log('create', sess.id, ' ', sess.username);
+    sess.username ? response.sendFile(__dirname + '/views/createMap.html') : response.redirect('/');
+    // response.sendFile(__dirname + '/views/createMap.html');
 });
 
 app.get('/fight', function(request, response) {
-    response.sendFile(__dirname + '/views/fight.html');
+    sess = request.session;
+    console.log('fight', sess.id, ' ', sess.username);
+    sess.username ? response.sendFile(__dirname + '/views/fight.html') : response.redirect('/');
+    // response.sendFile(__dirname + '/views/fight.html');
 });
 
 app.get('/register', function(request, response) {
@@ -37,7 +79,20 @@ app.get('/register', function(request, response) {
 });
 
 app.get('/gamepad', function(request, response) {
+    sess = request.session;
+    console.log('gamepad', sess.id, ' ', sess.username);
     response.sendFile(__dirname + '/views/gamepad.html');
+});
+
+app.get('/logout', function(request, response) {
+    // console.log(request.session.username);
+    // onlineUser.splice(onlineUser.indexOf(request.session.username), 1);
+    // console.log(onlineUser);
+
+    // console.log(onlineUser.indexOf(request.session.username));
+    request.session.destroy((err) => {
+        err ? console.log(err) : response.redirect('/')
+    });
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -50,11 +105,20 @@ app.post('/login', urlencodedParser, function(req, res) {
     console.log(request);
     db.selectPlayer(req.body.username, req.body.password, function(isExist) {
         if (isExist) {
-            res.send({ data: 1 });
+            if (!onlineUser.includes(req.body.username)) {
+                onlineUser.push(req.body.username);
+                console.log(onlineUser);
+                res.send({ data: 1 });
+            } else {
+                res.send({ data: -1 });
+            }
         } else {
             res.send({ data: 0 });
         }
     })
+    sess = req.session;
+    sess.username = req.body.username;
+    // res.end('done');
 });
 
 app.post('/register', urlencodedParser, function(req, res) {
@@ -102,9 +166,13 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        STARTGAME(data_from_console, 1);
-
+        // STARTGAME(data_from_console, 1);
+        // JOINROOM(data.DATA);
     });
+});
+
+app.post('/hit', function(request, response) {
+    response.send({ data: 'H:O' });
 });
 
 function STARTGAME(TEXTDATA, PLAYER) {
@@ -117,22 +185,13 @@ function STARTGAME(TEXTDATA, PLAYER) {
         HienThiKetQuaLenAllClientP2();
         // KIEMTRAENDGAME();
     }
-    JOINROOM(TEXTDATA);
 }
 
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
 ///////////////////////////////////////////////////////
 
-var urlArr = ['room', 'create', 'fight'];
-var UrlSocketID = [
-    ['a1', 'b1', 'c1'],
-    ['a2', 'b2', 'c2'],
-    [],
-    []
-];
-var p1UrlSocketID = [];
-var NumOfPlayer = 0;
+var NumOfGamePad = 0;
 
 //so do tau chien cua player1 1:co - 0:khong
 var p1Ship = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -169,7 +228,7 @@ var result = 'none';
 var controsophonghientai = 1; // chua con tro chi so phong hien tai
 var phong = [0, 0, 0]; // chua mang phong
 
-function JOINROOM(TEXTDATA) {
+function JOINROOM(TEXTDATA, TEXTCOOKIE) {
     result = 'none';
     if (TEXTDATA == "\"=U\"" && controsophonghientai > 1) {
         controsophonghientai -= 1;
@@ -187,35 +246,20 @@ function JOINROOM(TEXTDATA) {
         }
     }
     console.log(phong);
-    io.sockets.emit("ROOM", { POIN: controsophonghientai, PHONG: phong, RESULT: result });
+    io.sockets.emit("ROOM", { POIN: controsophonghientai, PHONG: phong, RESULT: result, COOKIE: TEXTCOOKIE });
 }
 
 io.on("connection", function(socket) {
-    socket.emit("NumOfPlayerInRoom", { PHONG: phong });
+    socket.emit("NumOfPlayerInRoom", { PHONG: phong, name: sess != null ? sess.username : 'null' });
     socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
-    console.log("Co nguoi ket noi server, socket: " + socket.id);
-    var url = socket.handshake.headers.referer;
-
-    // for (let index = 0; index < urlArr.length; index++) {
-    //     if (url.includes(urlArr[index])) {
-    //         if (UrlSocketID[NumOfPlayer][index] =='') {
-    //             NumOfPlayer++;
-    //         }
-    //         UrlSocketID[NumOfPlayer][index] = socket.id;
-    //     }
-    // }
-    console.log(url);
-    // if (UrlSocketID[2][0] == null)
-    //     console.log(1);
-    // else
-    //     console.log(2);
-    // console.log(UrlSocketID);
+    // console.log("Co nguoi ket noi server, socket: " + socket.id);
+    // var url = socket.handshake.headers.referer;
 
     socket.on('SendTextToSerVer', function(data) {
         console.log(data);
 
         STARTGAME(data.DATA, data.P);
-        JOINROOM(data.DATA);
+        JOINROOM(data.DATA, data.COOKIE);
         //RESTARTGAME();
 
     });
