@@ -22,6 +22,7 @@ $('#submit').on('click', function() {
         success: function(response) {
             if (response.data == 1) {
                 alert('Đăng nhập thành công');
+                setCookie("Bantausession", response.ID, 365);
                 window.location = '/room';
             } else if (response.data == -1)
                 $("#errors").html(userIsOnline);
@@ -48,3 +49,10 @@ document.getElementById("password").addEventListener("keyup", function(event) {
         document.getElementById("submit").click();
     }
 });
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}

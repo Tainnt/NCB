@@ -11,11 +11,15 @@
 </head>
 
 <body onload="InitPage()">
-
+    <div>
+        <p style="font-size: 23px; float: left;">Bạn đang đăng nhập với tên:&#160</p>
+        <p id="id_cua_toi" style="font-size: 23px ; color: #7c0061"></p>
+        <button id="logout">Thoát</button>
+    </div>
     <!-- kHAI BAO GIAO DIEN BAN DO CUA PLAYER1 , PLAYER2, HIEU UNG TEN LUA, HIEU UNG CHUC MUNG 
 The canvas la the HTML dung de tao hieu ung chuyen dong theo toa do pixel-->
 
-    <canvas id="player1" width="620" height="620" style="position: absolute;z-index: -1"></canvas>
+    <canvas id="player1" width="620" height="620" style="position: absolute;z-index: -1; clear: left;"></canvas>
     <canvas id="muctieu" width="1270" height="630" style="position: absolute;z-index: -1;"> </canvas>
     <div id="ShipInfo">
         <div>

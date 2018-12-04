@@ -2,46 +2,28 @@
 /////////////PHẦN HOAT DONG SERVER/////////////////////
 //////////////////////////////////////////////////////
 var express = require("express");
-const parseurl = require('parseurl')
+var session = require("express-session")
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const session = require('express-session')
 var db = require('./DB-v2');
 var app = express();
+app.use(express.static("public"));
 
-var onlineUser = [];
 let sess;
-
 
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
-// app.use(bodyParser.urlencoded({ extended: true }));
-// parse application/json
-app.use(bodyParser.json());
-app.use(express.static('public'));;
+// app.use(bodyParser.json());
+app.use(express.static('public'));
 
+app.use(cookieParser());
 app.use(session({
-    secret: 'doraemon',
-    resave: true,
+    secret: 'hahahihi8585',
+    resave: false,
     saveUninitialized: true,
-    cookie: {
-        maxAge: 300000
-    }
-}));
-
-app.use(function(req, res, next) {
-    if (!req.session.views) {
-        req.session.views = {}
-    }
-
-    // // get the url pathname
-    // const pathname = parseurl(req).pathname
-
-    // // count the views
-    // req.session.views[pathname] = (req.session.views[pathname] || 0) + 1
-    // console.log(req.session.views[pathname])
-    next();
-});
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
+}))
 
 server.listen(3000, function() {
     console.log('Server is running at port: 3000!')
@@ -53,25 +35,17 @@ app.get('/', function(request, response) {
 
 app.get('/room', function(request, response) {
     sess = request.session;
-    console.log('room', sess.id, ' ', sess.username);
     sess.username ? response.sendFile(__dirname + '/views/room.html') : response.redirect('/');
-    // response.redirect('/main');
-    // sess.username ? response.render('admin', { username: sess.username }) : response.render('login');
-    // response.sendFile(__dirname + '/views/room.html');
 });
 
 app.get('/create', function(request, response) {
     sess = request.session;
-    console.log('create', sess.id, ' ', sess.username);
     sess.username ? response.sendFile(__dirname + '/views/createMap.html') : response.redirect('/');
-    // response.sendFile(__dirname + '/views/createMap.html');
 });
 
 app.get('/fight', function(request, response) {
     sess = request.session;
-    console.log('fight', sess.id, ' ', sess.username);
     sess.username ? response.sendFile(__dirname + '/views/fight.html') : response.redirect('/');
-    // response.sendFile(__dirname + '/views/fight.html');
 });
 
 app.get('/register', function(request, response) {
@@ -79,17 +53,13 @@ app.get('/register', function(request, response) {
 });
 
 app.get('/gamepad', function(request, response) {
-    sess = request.session;
-    console.log('gamepad', sess.id, ' ', sess.username);
     response.sendFile(__dirname + '/views/gamepad.html');
 });
 
 app.get('/logout', function(request, response) {
-    // console.log(request.session.username);
-    // onlineUser.splice(onlineUser.indexOf(request.session.username), 1);
-    // console.log(onlineUser);
+    SESSIONID.splice(SESSIONID.indexOf(request.session), 1);
+    SESSIONUSER.splice(SESSIONUSER.indexOf(request.session.username), 1);
 
-    // console.log(onlineUser.indexOf(request.session.username));
     request.session.destroy((err) => {
         err ? console.log(err) : response.redirect('/')
     });
@@ -98,27 +68,34 @@ app.get('/logout', function(request, response) {
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 app.post('/login', urlencodedParser, function(req, res) {
-    request = {
-        usn: req.body.username,
-        pw: req.body.password
-    };
-    console.log(request);
+
     db.selectPlayer(req.body.username, req.body.password, function(isExist) {
         if (isExist) {
-            if (!onlineUser.includes(req.body.username)) {
-                onlineUser.push(req.body.username);
-                console.log(onlineUser);
-                res.send({ data: 1 });
+            if (!SESSIONUSER.includes(req.body.username)) {
+                res.send({ data: 1, ID: req.sessionID, usr: req.body.username });
+                var temp = 0;
+                for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                    if (SESSIONID[i] == req.sessionID) {
+                        SESSIONUSER[i] = req.body.username;
+                        temp = 1;
+                    }
+                }
+                if (temp == 0) {
+                    SESSIONID.push(req.sessionID);
+                    SESSIONUSER.push(req.body.username);
+                }
             } else {
                 res.send({ data: -1 });
             }
         } else {
             res.send({ data: 0 });
         }
+        //console.log(req.session.username);
+        console.log("SESSIONID: " + SESSIONID);
+        console.log("SESSIONUSER: " + SESSIONUSER);
     })
     sess = req.session;
     sess.username = req.body.username;
-    // res.end('done');
 });
 
 app.post('/register', urlencodedParser, function(req, res) {
@@ -155,11 +132,7 @@ app.post('/', function(request, response) {
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
-        // Note: the 2 lines above could be replaced with this next one:
-        // response.writeHead(200, {'Content-Type': 'application/json'})
 
-        //const responseBody = { headers, method, url, body };
-        //PHA const responseBody = {body};
         const responseBody = body;
 
         //post_data = JSON.stringify(responseBody);
@@ -171,7 +144,25 @@ app.post('/', function(request, response) {
     });
 });
 
-app.post('/hit', function(request, response) {
+app.post('/board-info', function(request, response) {
+    const { headers, method, url } = request;
+    let body = [];
+    request.on('error', (err) => {
+        console.error(err);
+    }).on('data', (chunk) => {
+        body.push(chunk);
+    }).on('end', () => {
+        body = Buffer.concat(body).toString();
+        // BEGINNING OF NEW STUFF
+        console.log(body);
+
+        const responseBody = "Gotta";
+        post_data = JSON.stringify(responseBody);
+        response.send(post_data);
+    });
+});
+
+app.post('/hit-or-not', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
     request.on('error', (err) => {
@@ -188,30 +179,20 @@ app.post('/hit', function(request, response) {
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
-        // Note: the 2 lines above could be replaced with this next one:
-        // response.writeHead(200, {'Content-Type': 'application/json'})
 
-        //const responseBody = { headers, method, url, body };
-        //PHA const responseBody = {body};
         const responseBody = "H:O";
         post_data = JSON.stringify(responseBody);
         response.send(post_data);
-        //post_data = JSON.stringify(responseBody);
-        // data_from_console = JSON.stringify(responseBody);
-        // console.log(data_from_console);
-
-        // STARTGAME(data_from_console, 1);
-        // JOINROOM(data.DATA);
     });
 });
 
-function STARTGAME(TEXTDATA, PLAYER) {
+function STARTGAME(DATA, PLAYER, COOKIE) {
     if (PLAYER == 1) {
-        XuLyDuLieuGuiLenP1(TEXTDATA);
+        XuLyDuLieuGuiLenP1(DATA);
         HienThiKetQuaLenAllClientP1();
         // KIEMTRAENDGAME();
     } else {
-        XuLyDuLieuGuiLenP2(TEXTDATA)
+        XuLyDuLieuGuiLenP2(DATA)
         HienThiKetQuaLenAllClientP2();
         // KIEMTRAENDGAME();
     }
@@ -220,8 +201,8 @@ function STARTGAME(TEXTDATA, PLAYER) {
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
 ///////////////////////////////////////////////////////
-
-var NumOfGamePad = 0;
+SESSIONID = [];
+SESSIONUSER = [];
 
 //so do tau chien cua player1 1:co - 0:khong
 var p1Ship = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -258,15 +239,15 @@ var result = 'none';
 var controsophonghientai = 1; // chua con tro chi so phong hien tai
 var phong = [0, 0, 0]; // chua mang phong
 
-function JOINROOM(TEXTDATA, TEXTCOOKIE) {
+function JOINROOM(DATA, PLAYER, COOKIE) {
     result = 'none';
-    if (TEXTDATA == "\"=U\"" && controsophonghientai > 1) {
+    if (DATA == "U" && controsophonghientai > 1) {
         controsophonghientai -= 1;
     }
-    if (TEXTDATA == "\"=D\"" && controsophonghientai < 3) {
+    if (DATA == "D" && controsophonghientai < 3) {
         controsophonghientai += 1;
     }
-    if (TEXTDATA == "\"=O\"") {
+    if (DATA == "O") {
         if (phong[controsophonghientai - 1] < 2) {
             console.log("Ban da vao phong " + controsophonghientai);
             phong[controsophonghientai - 1] += 1;
@@ -276,23 +257,38 @@ function JOINROOM(TEXTDATA, TEXTCOOKIE) {
         }
     }
     console.log(phong);
-    io.sockets.emit("ROOM", { POIN: controsophonghientai, PHONG: phong, RESULT: result, COOKIE: TEXTCOOKIE });
+    io.sockets.emit("Room", { POIN: controsophonghientai, PHONG: phong, RESULT: result, COOKIE: COOKIE });
 }
 
 io.on("connection", function(socket) {
-    socket.emit("NumOfPlayerInRoom", { PHONG: phong, name: sess != null ? sess.username : 'null' });
+    socket.emit("NumOfPlayerInRoom", { PHONG: phong });
     socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
-    // console.log("Co nguoi ket noi server, socket: " + socket.id);
-    // var url = socket.handshake.headers.referer;
+    socket.emit("data-user", { usr: SESSIONUSER, ID: SESSIONID });
 
     socket.on('SendTextToSerVer', function(data) {
         console.log(data);
 
-        STARTGAME(data.DATA, data.P);
-        JOINROOM(data.DATA, data.COOKIE);
+        STARTGAME(data.DATA, data.P, data.COOKIE);
+        JOINROOM(data.DATA, data.P, data.COOKIE);
         //RESTARTGAME();
 
     });
+    socket.on("YeuCauUser", function(data) {
+        console.log("COOKIE " + data.COKI);
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data.COKI) {
+                socket.emit('ResYeuCauUser', {
+                    USerLa: SESSIONUSER[i],
+                });
+                break;
+            } else {
+                socket.emit('ResYeuCauUser', {
+                    USerLa: "Chưa đăng nhập",
+                });
+            }
+        }
+    });
+
     socket.on('sendShipPos', function(data) {
         if (data.player == 1) {
             p1Ship = data.Arr;
@@ -307,68 +303,68 @@ io.on("connection", function(socket) {
 
 
 function XuLyDuLieuGuiLenP1(controcontrol) {
-    if (controcontrol == "\"=L\"" || controcontrol == "\"=R\"" || controcontrol == "\"=U\"" || controcontrol == "\"=D\"" || controcontrol == "\"=O\"" || controcontrol == "\"=C\"") {
-        if (controcontrol == "\"=L\"") {
-            if (Math.abs(controplayer1 % 10) != 1) {
-                controplayer1 -= 1;
-            }
-            key = 'L';
-        } else if (controcontrol == "\"=R\"") {
-            if (Math.abs(controplayer1 % 10) != 0) {
-                controplayer1 += 1;
-            }
-            key = 'R';
-        } else if (controcontrol == "\"=U\"") {
-            if (Math.abs(Math.floor((controplayer1) / 10)) != 0) {
-                controplayer1 -= 10;
-            }
-            key = 'U';
-        } else if (controcontrol == "\"=D\"") {
-            if (Math.abs(Math.floor((controplayer1) / 10)) != 9) {
-                controplayer1 += 10;
-            }
-            key = 'D';
-        } else if (controcontrol == "\"=O\"") {
-            shot = 1;
-            key = 'O';
-        } else if (controcontrol == "\"=C\"") {
-            shot = 1;
-            key = 'C';
+    if (controcontrol == "L") {
+        if (Math.abs(controplayer1 % 10) != 1) {
+            controplayer1 -= 1;
         }
-    } else { error = 1; }
+        key = 'L';
+    } else if (controcontrol == "R") {
+        if (Math.abs(controplayer1 % 10) != 0) {
+            controplayer1 += 1;
+        }
+        key = 'R';
+    } else if (controcontrol == "U") {
+        if (Math.abs(Math.floor((controplayer1) / 10)) != 0) {
+            controplayer1 -= 10;
+        }
+        key = 'U';
+    } else if (controcontrol == "D") {
+        if (Math.abs(Math.floor((controplayer1) / 10)) != 9) {
+            controplayer1 += 10;
+        }
+        key = 'D';
+    } else if (controcontrol == "O") {
+        shot = 1;
+        key = 'O';
+    } else if (controcontrol == "C") {
+        shot = 1;
+        key = 'C';
+    } else {
+        error = 1;
+    }
 }
 
 
 function XuLyDuLieuGuiLenP2(controcontrol) {
-    if (controcontrol == "\"=L\"" || controcontrol == "\"=R\"" || controcontrol == "\"=U\"" || controcontrol == "\"=D\"" || controcontrol == "\"=O\"" || controcontrol == "\"=C\"") {
-        if (controcontrol == "\"=L\"") {
-            if (Math.abs(controplayer2 % 10) != 1) {
-                controplayer2 -= 1;
-            }
-            key = 'L';
-        } else if (controcontrol == "\"=R\"") {
-            if (Math.abs(controplayer2 % 10) != 0) {
-                controplayer2 += 1;
-            }
-            key = 'R';
-        } else if (controcontrol == "\"=U\"") {
-            if (Math.abs(Math.floor((controplayer2) / 10)) != 0) {
-                controplayer2 -= 10;
-            }
-            key = 'U';
-        } else if (controcontrol == "\"=D\"") {
-            if (Math.abs(Math.floor((controplayer2) / 10)) != 9) {
-                controplayer2 += 10;
-            }
-            key = 'D';
-        } else if (controcontrol == "\"=O\"") {
-            shot = 1;
-            key = 'O';
-        } else if (controcontrol == "\"=C\"") {
-            shot = 1;
-            key = 'C';
+    if (controcontrol == "L\"=L\"") {
+        if (Math.abs(controplayer2 % 10) != 1) {
+            controplayer2 -= 1;
         }
-    } else { error = 1; }
+        key = 'L';
+    } else if (controcontrol == "R") {
+        if (Math.abs(controplayer2 % 10) != 0) {
+            controplayer2 += 1;
+        }
+        key = 'R';
+    } else if (controcontrol == "U") {
+        if (Math.abs(Math.floor((controplayer2) / 10)) != 0) {
+            controplayer2 -= 10;
+        }
+        key = 'U';
+    } else if (controcontrol == "D") {
+        if (Math.abs(Math.floor((controplayer2) / 10)) != 9) {
+            controplayer2 += 10;
+        }
+        key = 'D';
+    } else if (controcontrol == "O") {
+        shot = 1;
+        key = 'O';
+    } else if (controcontrol == "C") {
+        shot = 1;
+        key = 'C';
+    } else {
+        error = 1;
+    }
 }
 
 function HienThiKetQuaLenAllClientP1() {

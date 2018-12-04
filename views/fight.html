@@ -13,8 +13,14 @@
 <body>
     <!-- kHAI BAO GIAO DIEN BAN DO CUA PLAYER1 , PLAYER2, HIEU UNG TEN LUA, HIEU UNG CHUC MUNG 
 The canvas la the HTML dung de tao hieu ung chuyen dong theo toa do pixel-->
-
-    <canvas id="player1" width="620" height="620" style="position: absolute;z-index: -1"></canvas>
+    <div style="padding-left: 150px">
+        <p style="font-size: 23px; float: left;">Người chơi 1:&#160</p>
+        <p id="id_cua_toi_1" style="font-size: 23px ; color: #7c0061"></p>
+        <p style="font-size: 23px; padding-left: 660px">Người chơi 2:&#160</p>
+        <p id="id_cua_toi_2" style="font-size: 23px ; color: #7c0061"></p>
+        <button style="margin-left: 400px">Nhấn Cancel để thoát trận</button>
+    </div>
+    <canvas id="player1" width="620" height="620" style="position: absolute;z-index: -1; clear: left;"></canvas>
     <canvas id="player2" width="1260" height="620" style="position: absolute;z-index: -1;"> </canvas>
     <canvas id="hieuungshot" width="1270" height="630" style="position: absolute;z-index: -1; border:5px solid #fff;"> </canvas>
     <canvas id="muctieu" width="1270" height="630" style="position: absolute;z-index: -1;"> </canvas>

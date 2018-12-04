@@ -42,9 +42,6 @@ var orientation = false;
 var tempPointer = 0;
 var tempKey = 'X';
 
-// document.cookie = "username=framgia";
-console.log(document.cookie);
-
 function InitPage() {
     var count = 0;
     var num = 4;
@@ -235,6 +232,36 @@ function DeleteShip(pt) {
 
 //Ket noi den Socket server
 var socket = io.connect("http://localhost:3000");
+var userla;
+var x = getCookie("Bantausession");
+
+socket.emit('YeuCauUser', {
+    COKI: x,
+});
+
+socket.on("ResYeuCauUser", function(data) {
+    userla = data.USerLa;
+    var element = document.getElementById('id_cua_toi');
+    element.innerHTML = ' ' + userla;
+    console.log(element);
+    console.log(element.innerHTML);
+});
+
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 //CAP NHAT TRAN CHIEN
 socket.on('NewData', function(data) {
     var pt = Math.abs(data.CONTRO) - 1;
@@ -334,4 +361,8 @@ socket.on('NewData', function(data) {
 $('#btn').on('click', function() {
     window.location = '/fight';
     socket.emit("sendShipPos", { Arr: shipPosArr, player: 1 });
+});
+
+$('#logout').on('click', function() {
+    window.location = '/logout';
 });
