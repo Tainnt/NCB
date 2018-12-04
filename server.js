@@ -114,7 +114,6 @@ app.post('/register', urlencodedParser, function(req, res) {
     })
 });
 
-var data_from_console;
 app.post('/', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
@@ -136,7 +135,7 @@ app.post('/', function(request, response) {
         const responseBody = body;
 
         //post_data = JSON.stringify(responseBody);
-        data_from_console = JSON.stringify(responseBody);
+        var data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
         STARTGAME(data_from_console, 1);
@@ -157,7 +156,7 @@ app.post('/board-info', function(request, response) {
         console.log(body);
 
         const responseBody = "Gotta";
-        post_data = JSON.stringify(responseBody);
+        var post_data = JSON.stringify(responseBody);
         response.send(post_data);
     });
 });
@@ -181,7 +180,7 @@ app.post('/hit-or-not', function(request, response) {
         response.setHeader('Content-Type', 'application/json');
 
         const responseBody = "H:O";
-        post_data = JSON.stringify(responseBody);
+        var post_data = JSON.stringify(responseBody);
         response.send(post_data);
     });
 });
