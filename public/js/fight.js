@@ -206,7 +206,7 @@ function LoadShip(start, end, arr) {
     }
 }
 //Ket noi den Socket server
-var socket = io.connect("http://localhost:3000");
+var socket = io.connect("http://doanncb.ddns.net:3000");
 
 socket.on('ShipPos', function(data) {
     LoadShip(0, 99, data.P1);

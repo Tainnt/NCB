@@ -139,8 +139,8 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        // STARTGAME(data_from_console, 1);
-        // JOINROOM(data.DATA);
+        STARTGAME(data_from_console, 1);
+        JOINROOM(data.DATA);
     });
 });
 
