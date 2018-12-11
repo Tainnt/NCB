@@ -16,6 +16,19 @@ var shotorno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ];
+var shotorno2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+];
+var P1SHIP = [];
+var P2SHIP = [];
 
 //lay thong tin
 var c = document.getElementById("player1");
@@ -63,6 +76,9 @@ var vy = 0;
 var vx2 = 0;
 var vy2 = 0;
 var checkshotornoshot = 0;
+var timer = 41;
+var t = timer;
+
 //HAM HIEU UNG BAN TRUNG BAN HUT
 function hieuungchucmungp1(time, hieuung) {
     setTimeout(function() {
@@ -139,7 +155,7 @@ function dohoashot(newX, newY, data) { //data la gia tri gui qua 0-100.
             hieuungctx.drawImage(tenlua, -100, 0, 60, 60);
             muctieuctx.drawImage(mtieuko, newX, newY, 60, 60);
         }
-    }, 1)
+    }, 0.3)
 }
 
 function dohoashot2(newX, newY, data) { //data la gia tri gui qua 0-100.
@@ -173,7 +189,7 @@ function dohoashot2(newX, newY, data) { //data la gia tri gui qua 0-100.
             hieuungctx.drawImage(tenlua2, -100, 0, 60, 60);
             muctieuctx.drawImage(mtieuko, newX, newY, 60, 60);
         }
-    }, 1)
+    }, 0.3)
 }
 
 function LoadShip(start, end, arr) {
@@ -206,11 +222,11 @@ function LoadShip(start, end, arr) {
     }
 }
 //Ket noi den Socket server
-var socket = io.connect("http://doanncb.ddns.net:3000");
+var socket = io.connect("http://localhost:3000");
 
-socket.on('ShipPos', function(data) {
-    LoadShip(0, 99, data.P1);
-});
+// socket.on('ShipPos', function(data) {
+//     LoadShip(0, 99, data.P1);
+// });
 
 //CAP NHAT TRAN CHIEN
 socket.on('NewData', function(data) {
@@ -246,4 +262,225 @@ socket.on('NewData2', function(data) {
     } else {
         dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
     }
+});
+
+
+var x = getCookie("Bantausession");
+
+socket.emit('YeuCauUser', {
+    COKI: x,
+});
+socket.emit('REQYEUCAUCHECKSERVER', {
+    COKI: x,
+});
+socket.on("ResYeuCauUser", function(data) {
+    var userla = data.USerLa;
+    var element = document.getElementById('id_cua_toi_1');
+    element.innerHTML = '' + userla;
+    // console.log(element);
+    // console.log(element.innerHTML);
+});
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+socket.on("YEUCAUCHECKSERVER", function(data) {
+    console.log("Check");
+    socket.emit('REQYEUCAUCHECKSERVER', {
+        COKI: x,
+    });
+});
+var shotf = 0;
+var SHOTLAYERFIGHT = 0;
+var shotfEnemy = 0;
+var SHOTLAYERFIGHTEnemy = 0;
+var turn = 1;
+var chay1lan = 1;
+var chay1lan2 = 1;
+var chay1lan3 = 1;
+
+var WIN = 0;
+var P1WIN = 0;
+var P2WIN = 0;
+if (chay1lan == 1) {
+    CHECKINTERVAL();
+    SETINTERVAL();
+    chay1lan = 0;
+}
+socket.on("RESYEUCAUCHECKSERVER", function(data) {
+    //Che do 1 PC mode
+    LoadShip(0, 99, P1SHIP);
+    //LoadShip(0, 99, P1SHIP);
+    if (data.emSHOTLAYERFIGHT > SHOTLAYERFIGHT) {
+        shotf = 1;
+    } else { shotf = 0; }
+    SHOTLAYERFIGHT = data.emSHOTLAYERFIGHT;
+
+    if (data.emSHOTENEMY > SHOTLAYERFIGHTEnemy) {
+        shotfEnemy = 1;
+    } else { shotfEnemy = 0; }
+    SHOTLAYERFIGHTEnemy = data.emSHOTENEMY;
+
+    // console.log("Con tro cua ban: "+data.emCONTROPLAYERFIGHT);
+    // console.log("Shot cua ban: " +shotf);
+
+    // console.log("Con tro cua Enemy: "+data.emCONTROENEMY);
+    // console.log("Shot cua Enemy: " +shotfEnemy);
+    // console.log("LUOT" +data.emLUOT);
+    // console.log("SHIPMAP: "+data.emSHIPMAP);
+    // console.log("SHIPMAP ENYMY: " +data.emSHIPMAPENYMY);
+    console.log(P1SHIP + "P1");
+    console.log(P2SHIP + "P2");
+    if (chay1lan2 == 1) {
+        if (data.emLUOT == 1) {
+            turn = 1;
+        } else turn = -1;
+        chay1lan2 = 0;
+    }
+    if (chay1lan3 == 1) {
+        P1SHIP = data.emSHIPMAP;
+        P2SHIP = data.emSHIPMAPENYMY;
+        for (var i = P1SHIP.length - 1; i >= 0; i--) {
+            if (P1SHIP[i] != "N") {
+                WIN += 1;
+            }
+        }
+        chay1lan3 = 0;
+    }
+    enemyla = data.emENEMY;
+    var element = document.getElementById('id_cua_toi_2');
+    element.innerHTML = ' ' + enemyla;
+    //LoadShip(0, 99, data.emSHIPMAP);
+    console.log(WIN);
+    console.log(P1WIN + "P1 WIN");
+    console.log(P2WIN + "P2 WIN");
+
+    //Player1
+    if (turn == 1) {
+        //document.getElementById("demo2").innerHTML = "Your turn";
+        var CONTRO1 = (data.emCONTROPLAYERFIGHT);
+        console.log(data.emCONTROPLAYERFIGHT + "Player1");
+        console.log(CONTRO1);
+        if (P2SHIP[CONTRO1 - 1] == "N") { CONTRO1 = -CONTRO1; }
+        var requestData = Math.abs(CONTRO1);
+        //LoadShip(0, 99, P1SHIP);
+        if (shotf) {
+            //document.getElementById("demo2").innerHTML = "Enemy turn";
+            if (shotorno2[(Math.abs(requestData - 1))] == 0) {
+                dohoashot(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], CONTRO1);
+                shotorno2[(Math.abs(requestData - 1))] += 1;
+                t = timer;
+                // turn = -turn;
+                if (P2SHIP[Math.abs(requestData - 1)] == 'N') {
+                    turn = -turn;
+                }
+
+                if (CONTRO1 > 0) {
+                    P1WIN += 1;
+                }
+            } else {
+                // alert("Chỗ này bạn bắn rồi!");
+                dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
+            }
+        } else {
+            dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno2[Math.abs(requestData - 1)])
+        }
+    } else {
+        //document.getElementById("demo2").innerHTML = "Enemy turn";
+        var CONTRO2 = (data.emCONTROENEMY);
+        console.log(data.emCONTROENEMY + "Player2");
+        console.log(CONTRO2);
+        if (P1SHIP[CONTRO2 - 1] == "N") { CONTRO2 = -CONTRO2; }
+        var requestData2 = Math.abs(CONTRO2);
+        if (shotfEnemy) {
+            //document.getElementById("demo2").innerHTML = "Your turn";
+            if (shotorno[(Math.abs(requestData2 - 1))] == 0) {
+                dohoashot2(toadoxplayer1[(Math.abs(requestData2 - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData2 - 1)) / 10)], CONTRO2);
+                shotorno[(Math.abs(requestData2 - 1))] += 1;
+                t = timer;
+                // turn = -turn;
+                if (P1SHIP[Math.abs(requestData2 - 1)] == 'N') {
+                    turn = -turn;
+                }
+                if (CONTRO2 > 0) {
+                    P2WIN += 1;
+                }
+            } else {
+                // alert("Chỗ này bạn bắn rồi!");
+                dohoamuctieu(toadoxplayer1[(Math.abs(requestData2 - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData2 - 1)) / 10)], 1)
+            }
+        } else {
+            dohoamuctieu(toadoxplayer1[(Math.abs(requestData2 - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData2 - 1)) / 10)], shotorno[Math.abs(requestData2 - 1)])
+        }
+    }
+    //Che do 2 PC mode
+    function myFunction() {
+        if (P1WIN > P2WIN) {
+            document.getElementById("winorlose").innerHTML = "WIN";
+        } else document.getElementById("winorlose").innerHTML = "LOSE";
+        modal.style.display = "block";
+    }
+    if ((P1WIN == WIN) || (P2WIN == WIN)) {
+        setTimeout(myFunction, 3000);
+    }
+});
+
+function CHECKINTERVAL() {
+    setInterval(function() {
+        if (turn == 1) {
+            document.getElementById("demo2").innerHTML = "Your turn";
+            document.getElementById("demo2").style.color = "#337AB7";
+        } else {
+            document.getElementById("demo2").innerHTML = "Enemy turn";
+            document.getElementById("demo2").style.color = "#2ecc71";
+        }
+    }, 300);
+}
+
+function SETINTERVAL() {
+    setInterval(function() {
+        t = t - 1;
+        document.getElementById("demo").innerHTML = t;
+        if (t == 0) {
+            t = timer;
+            turn = -turn;
+        }
+    }, 1000);
+}
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+function PlayAgain() {
+    socket.emit('Playagain', {
+        COOKIE: x,
+    });
+}
+
+socket.on("RESPlayagain", function(data) {
+    console.log(data.emPlayAgain);
+    if (data.emPlayAgain == 1) {
+        //window.location = '/create';
+        socket.emit('CLEAR', {});
+
+    }
+});
+socket.on("CLEAROK", function(data) {
+    window.location = '/create';
+});
+
+$('#logout').on('click', function() {
+    window.location = '/logout';
 });

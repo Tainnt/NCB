@@ -30,22 +30,63 @@ server.listen(3000, function() {
 });
 
 app.get('/', function(request, response) {
-    response.sendFile(__dirname + '/views/index.html');
+    sess = request.session;
+    sess.username ? response.redirect('/room') : response.sendFile(__dirname + '/views/index.html');
 });
 
 app.get('/room', function(request, response) {
     sess = request.session;
     sess.username ? response.sendFile(__dirname + '/views/room.html') : response.redirect('/');
+    if (sess.username) {
+        //v7+
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == request.sessionID) {
+                console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+                if (STRUCT[i].KiemTraTrangThai() == 0) {
+                    STRUCT[i].setTrangThai("room");
+                }
+                console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+            }
+        }
+        //v7-
+    }
 });
 
 app.get('/create', function(request, response) {
     sess = request.session;
     sess.username ? response.sendFile(__dirname + '/views/createMap.html') : response.redirect('/');
+    if (sess.username) {
+        //v7+
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == request.sessionID) {
+                console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+                if (STRUCT[i].KiemTraTrangThai() == 1) {
+                    STRUCT[i].setTrangThai("create");
+                }
+                console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+            }
+        }
+        //v7-
+    }
 });
 
 app.get('/fight', function(request, response) {
     sess = request.session;
     sess.username ? response.sendFile(__dirname + '/views/fight.html') : response.redirect('/');
+    if (sess.username) {
+        //v7+
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == request.sessionID) {
+                console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai truoc");
+                if (STRUCT[i].KiemTraTrangThai() == 2) {
+                    STRUCT[i].setTrangThai("fight");
+                }
+                console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai sau");
+            }
+        }
+        //v7-
+    }
+    //FYEUCAUCHECKSERVER();
 });
 
 app.get('/register', function(request, response) {
@@ -58,8 +99,14 @@ app.get('/gamepad', function(request, response) {
 
 app.get('/logout', function(request, response) {
     SESSIONID.splice(SESSIONID.indexOf(request.session), 1);
+    numOfGamepad.push(USERGAMEPAD[SESSIONUSER.indexOf(request.session.username)] + "");
+    numOfGamepad.sort();
+    USERGAMEPAD.splice(SESSIONUSER.indexOf(request.session.username), 1);
     SESSIONUSER.splice(SESSIONUSER.indexOf(request.session.username), 1);
-
+    console.log("SESSIONUSER: " + SESSIONUSER);
+    console.log("USERGAMEPAD: " + USERGAMEPAD);
+    console.log("numOfGamepad: " + numOfGamepad);
+    io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
     request.session.destroy((err) => {
         err ? console.log(err) : response.redirect('/')
     });
@@ -77,12 +124,23 @@ app.post('/login', urlencodedParser, function(req, res) {
                 for (var i = SESSIONID.length - 1; i >= 0; i--) {
                     if (SESSIONID[i] == req.sessionID) {
                         SESSIONUSER[i] = req.body.username;
+                        //v7+
+                        STRUCT[i] = new User();
+                        STRUCT[i].setTrangThai("login");
+                        STRUCT[i].setUer(req.sessionID);
+                        //v7-
                         temp = 1;
                     }
                 }
                 if (temp == 0) {
                     SESSIONID.push(req.sessionID);
                     SESSIONUSER.push(req.body.username);
+                    //V7+
+                    STRUCT[useronline] = new User();
+                    STRUCT[useronline].setTrangThai("login");
+                    STRUCT[useronline].setUer(req.sessionID);
+                    useronline += 1;
+                    //V7-
                 }
             } else {
                 res.send({ data: -1 });
@@ -94,6 +152,7 @@ app.post('/login', urlencodedParser, function(req, res) {
         console.log("SESSIONID: " + SESSIONID);
         console.log("SESSIONUSER: " + SESSIONUSER);
     })
+
     sess = req.session;
     sess.username = req.body.username;
 });
@@ -114,6 +173,7 @@ app.post('/register', urlencodedParser, function(req, res) {
     })
 });
 
+var data_from_console;
 app.post('/', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
@@ -135,14 +195,19 @@ app.post('/', function(request, response) {
         const responseBody = body;
 
         //post_data = JSON.stringify(responseBody);
-        var data_from_console = JSON.stringify(responseBody);
+        data_from_console = JSON.stringify(responseBody);
         console.log(data_from_console);
 
-        STARTGAME(data_from_console, 1);
-        JOINROOM(data.DATA);
+        //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
+        {
+            // FYEUCAUCHECKSERVER();
+            // GAME(data_from_console.DATA, data_from_console.P);
+        }
+
     });
 });
 
+var numOfGamepad = [];
 app.post('/board-info', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
@@ -152,15 +217,33 @@ app.post('/board-info', function(request, response) {
         body.push(chunk);
     }).on('end', () => {
         body = Buffer.concat(body).toString();
-        // BEGINNING OF NEW STUFF
-        console.log(body);
+        response.on('error', (err) => {
+            console.error(err);
+        });
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'application/json');
 
-        const responseBody = "Gotta";
-        var post_data = JSON.stringify(responseBody);
+        // if (body == 'b_i') {
+        //     numOfGamepad.push(numOfGamepad.length + 1);
+        //     post_data = JSON.stringify(numOfGamepad.length + "");
+        //     response.send(post_data);
+        //     // io.sockets.emit("NumOfGamepad", { arr: numOfGamepad });
+        //     io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+        // } else {
+        //     post_data = JSON.stringify("error");
+        //     response.send(post_data);
+        // }
+        console.log(body);
+        numOfGamepad.push(body);
+        numOfGamepad.sort();
+        // post_data = JSON.stringify(numOfGamepad.length + "");
+        post_data = JSON.stringify("connected");
         response.send(post_data);
+        io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
     });
 });
 
+var vibrator = true;
 app.post('/hit-or-not', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
@@ -170,7 +253,6 @@ app.post('/hit-or-not', function(request, response) {
         body.push(chunk);
     }).on('end', () => {
         body = Buffer.concat(body).toString();
-        // BEGINNING OF NEW STUFF
 
         response.on('error', (err) => {
             console.error(err);
@@ -179,53 +261,150 @@ app.post('/hit-or-not', function(request, response) {
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
 
-        const responseBody = "H:O";
-        var post_data = JSON.stringify(responseBody);
-        response.send(post_data);
+        if (body == 'H?') {
+            if (vibrator) {
+                post_data = JSON.stringify("H:O");
+                response.send(post_data);
+            }
+        } else {
+            post_data = JSON.stringify("error");
+            response.send(post_data);
+        }
     });
 });
-
-function STARTGAME(DATA, PLAYER, COOKIE) {
-    if (PLAYER == 1) {
-        XuLyDuLieuGuiLenP1(DATA);
-        HienThiKetQuaLenAllClientP1();
-        // KIEMTRAENDGAME();
-    } else {
-        XuLyDuLieuGuiLenP2(DATA)
-        HienThiKetQuaLenAllClientP2();
-        // KIEMTRAENDGAME();
-    }
-}
 
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
 ///////////////////////////////////////////////////////
+
+//++++++++++++++++Function User++++++++++++++++++++++++++++++++++++++++++++++++++++
+//---Chuc nang: Luu giu thong tin cua user(STRUCT)-----//
+//---Tham so: Khong//
+//---Cach dung: khong dung trong chuong trinh - chi dung phuong thuc cua no--------------
+//trang thai 0: dang nhap va chon tay cam
+//Trang thai 1: room
+//trang thai 2: creatmap
+//trang thai 3: fight
+function User() {
+    // Thuộc tính chinh
+    this.username = '';
+    this.trangthai = '';
+    // Thuộc tính room
+    this.vitriphong = 1;
+    this.keyvaoroom = 0;
+    // Thuộc tính create map
+    this.controplayercreate = 1;
+    this.shotcreate = 0;
+    this.keycreate = 'R';
+    this.shipmap = [];
+    // Thuộc tính fight
+    this.sangsang = 0;
+    this.controplayerfight = 1;
+    this.shotfight = 0;
+    this.playagain = 0;
+
+    // Phương thức
+    this.setUer = function(username) {
+        this.username = username;
+    };
+    this.setTrangThai = function(trangthai) {
+        this.trangthai = trangthai;
+    };
+    this.setViTriPhong = function(sophong) {
+        this.vitriphong = sophong;
+    };
+    this.setKeyVaoRoom = function(key) {
+        this.keyvaoroom = key;
+    };
+    this.setConTroPlayerCreat = function(contro) {
+        this.controplayercreate = contro;
+    };
+    this.setShotCreat = function(shot) {
+        this.shotcreate = shot;
+    };
+    this.setKeyCreat = function(keycr) {
+        this.keycreate = keycr;
+    };
+    this.setShipMap = function(shipm) {
+        this.shipmap = shipm;
+    };
+    this.setSangSang = function(ss) {
+        this.sangsang = ss;
+    };
+    this.setConTroPlayerFight = function(controf) {
+        this.controplayerfight = controf;
+    };
+    this.setShotFight = function(shotf) {
+        this.shotfight = shotf;
+    };
+    this.setPlayAgain = function(again) {
+        this.playagain = again;
+    };
+
+
+    this.KiemTraTrangThai = function() {
+        if (this.trangthai == "room") {
+            return 1;
+        } else if (this.trangthai == "create") {
+            return 2;
+        } else if (this.trangthai == "fight") {
+            return 3;
+        } else { return 0 }
+    };
+
+    // Phải return this thì mới tạo mới được đối tượng
+    return this;
+}
+var STRUCT = [];
+var PHONGS = new TPHONG();
+//V12
+function TPHONG() {
+
+    this.phong1 = [];
+    this.phong2 = [];
+    this.phong3 = [];
+    // Thuộc tính fight
+
+
+    // Phương thức
+    this.setPhong1 = function(phong) {
+        if (this.phong1.length == 0) {
+            this.phong1[0] = phong;
+        } else this.phong1[1] = phong;
+    };
+    this.setPhong2 = function(phong) {
+        if (this.phong2.length == 0) {
+            this.phong2[0] = phong;
+        } else this.phong2[1] = phong;
+    };
+    this.setPhong3 = function(phong) {
+        if (this.phong3.length == 0) {
+            this.phong3[0] = phong;
+        } else this.phong3[1] = phong;
+    };
+
+    this.KiemTraTrangThai = function() {
+        if (this.trangthai == "room") {
+            return 1;
+        } else if (this.trangthai == "create") {
+            return 2;
+        } else if (this.trangthai == "fight") {
+            return 3;
+        } else { return 0 }
+    };
+
+    // Phải return this thì mới tạo mới được đối tượng
+    return this;
+}
+//v12-
+//V7-
 SESSIONID = [];
 SESSIONUSER = [];
-
+USERGAMEPAD = [];
+var useronline = 0;
 //so do tau chien cua player1 1:co - 0:khong
-var p1Ship = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-];
-var p2Ship = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-];
+var p1Ship = [];
+var p2Ship = [];
 
 var controplayer1 = 1; // luu vi tri hien tai cua con tro player1 tat ca 100 vi tri 1-100.
 var controplayer2 = 1; // luu vi tri hien tai cua con tro player2 tat ca 100 vi tri 1-100.
@@ -236,72 +415,618 @@ var key = 'O';
 
 var result = 'none';
 var controsophonghientai = 1; // chua con tro chi so phong hien tai
-var phong = [0, 0, 0]; // chua mang phong
+var phong = []; // chua mang phong
+phong[0] = 0;
+phong[1] = 0;
+phong[2] = 0;
 
-function JOINROOM(DATA, PLAYER, COOKIE) {
+
+//++++++++++++++++Function JOINROOM++++++++++++++++++++++++++++++++++++++++++++++++++++
+//---Chuc nang: Quan ly con tro trong trang room-----//
+//---Tham so: 1. TEXTDATA (U,D,L,R,O,C) 2.controsophonghientai (la vi tri con tro hien tai)//
+//---Cach dung: Duoc goi trong ham GAME------------------------------
+function JOINROOM(TEXTDATA, controsophonghientai) {
     result = 'none';
-    if (DATA == "U" && controsophonghientai > 1) {
+    if (TEXTDATA == "U" && controsophonghientai > 1) {
         controsophonghientai -= 1;
     }
-    if (DATA == "D" && controsophonghientai < 3) {
+    if (TEXTDATA == "D" && controsophonghientai < 3) {
         controsophonghientai += 1;
     }
-    if (DATA == "O") {
-        if (phong[controsophonghientai - 1] < 2) {
-            console.log("Ban da vao phong " + controsophonghientai);
-            phong[controsophonghientai - 1] += 1;
-            result = 'ok';
-        } else if (phong[controsophonghientai - 1] == 2) {
-            result = 'full';
-        }
-    }
-    console.log(phong);
-    io.sockets.emit("Room", { POIN: controsophonghientai, PHONG: phong, RESULT: result, COOKIE: COOKIE });
+    return controsophonghientai;
 }
 
 io.on("connection", function(socket) {
-    socket.emit("NumOfPlayerInRoom", { PHONG: phong });
-    socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
-    socket.emit("data-user", { usr: SESSIONUSER, ID: SESSIONID });
-
+    //socket.emit("NumOfPlayerInRoom", { PHONG: phong });
+    YEUCAUUSER();
+    //socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
+    FYEUCAUCHECKSERVER();
+    socket.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+    socket.on('gamepadSelected', function(data) {
+        USERGAMEPAD[SESSIONID.indexOf(data.COKI)] = numOfGamepad[data.i];
+        console.log("SESSIONUSER: " + SESSIONUSER);
+        console.log("USERGAMEPAD: " + USERGAMEPAD);
+        numOfGamepad.splice(data.i, 1);
+        io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+    });
+    //Nhung cau lenh trong ham nay dc su dung trong ham POST
     socket.on('SendTextToSerVer', function(data) {
         console.log(data);
-
-        STARTGAME(data.DATA, data.P, data.COOKIE);
-        JOINROOM(data.DATA, data.P, data.COOKIE);
-        //RESTARTGAME();
-
+        FYEUCAUCHECKSERVER();
+        GAME(data.DATA, data.P);
     });
-    socket.on("YeuCauUser", function(data) {
-        console.log("COOKIE " + data.COKI);
+    socket.on('pointerChange', function(data) {
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == data.COKI) {
-                socket.emit('ResYeuCauUser', {
-                    USerLa: SESSIONUSER[i],
-                });
+                console.log("User: " + SESSIONUSER[i]);
+                console.log("pointer: " + STRUCT[i].controplayercreate);
+                STRUCT[i].controplayercreate = data.pt + 1;
+                console.log("edit pointer: " + STRUCT[i].controplayercreate);
+            }
+        }
+    });
+    //++++++++++++++++Function YEUCAUUSER++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //---Chuc nang: Yeu cau cac client check trang thai user tren SERVER-----//
+    //---Tham so: Khong//
+    //---Cach dung: Dc dung khi lan dau load trang html moi--------------
+    function YEUCAUUSER() {
+        socket.on("YeuCauUser", function(data) {
+            //console.log("COOKIE " + data.COKI);
+            for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                if (SESSIONID[i] == data.COKI) {
+                    socket.emit('ResYeuCauUser', {
+                        USerLa: SESSIONUSER[i],
+                    });
+                    break;
+                } else {
+                    socket.emit('ResYeuCauUser', {
+                        USerLa: "Chưa đăng nhập",
+                    });
+                }
+            }
+        });
+    }
+
+    function CHECKLUOT(data) {
+
+        var enemy = data;
+        var EnemyLa = 0;
+        var YOU = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                YOU = STRUCT[i].sangsang;
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            EnemyLa = 1;
+                        } else { EnemyLa = 2; }
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+
+                        if (PHONGS.phong2[0] == data) {
+                            EnemyLa = 1;
+                        } else { EnemyLa = 2; }
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            EnemyLa = 1;
+                        } else { EnemyLa = 2; }
+                    } else {
+                        EnemyLa = 0;
+                    }
+                }
                 break;
-            } else {
-                socket.emit('ResYeuCauUser', {
-                    USerLa: "Chưa đăng nhập",
+            }
+        }
+        return EnemyLa;
+    }
+
+    function SHIPENYMYMAP(data) {
+
+        var enemy = data;
+        var EnemyLa = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                YOU = STRUCT[i].sangsang;
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            enemy = PHONGS.phong1[1];
+                        } else { enemy = PHONGS.phong1[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].shipmap;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+
+                        if (PHONGS.phong2[0] == data) {
+                            enemy = PHONGS.phong2[1];
+                        } else { enemy = PHONGS.phong2[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].shipmap;
+
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            enemy = PHONGS.phong3[1];
+                        } else { enemy = PHONGS.phong3[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].shipmap;
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                }
+                break;
+            }
+        }
+        return EnemyLa;
+    }
+
+    function CHECKSHOTENEMY(data) {
+
+        var enemy = data;
+        var EnemyLa = 0;
+        var YOU = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                YOU = STRUCT[i].sangsang;
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            enemy = PHONGS.phong1[1];
+                        } else { enemy = PHONGS.phong1[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].shotfight;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+
+                        if (PHONGS.phong2[0] == data) {
+                            enemy = PHONGS.phong2[1];
+                        } else { enemy = PHONGS.phong2[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].shotfight;
+
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            enemy = PHONGS.phong3[1];
+                        } else { enemy = PHONGS.phong3[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].shotfight;
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                }
+                break;
+            }
+        }
+        return EnemyLa;
+    }
+
+    function CHECKCONTROENEMY(data) {
+
+        var enemy = data;
+        var EnemyLa = 0;
+        var YOU = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                YOU = STRUCT[i].sangsang;
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            enemy = PHONGS.phong1[1];
+                        } else { enemy = PHONGS.phong1[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].controplayerfight;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+
+                        if (PHONGS.phong2[0] == data) {
+                            enemy = PHONGS.phong2[1];
+                        } else { enemy = PHONGS.phong2[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].controplayerfight;
+
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            enemy = PHONGS.phong3[1];
+                        } else { enemy = PHONGS.phong3[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].controplayerfight;
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                }
+                break;
+            }
+        }
+        return EnemyLa;
+    }
+
+    function CHECKSS(data) {
+
+        var enemy = data;
+        var EnemyLa = 0;
+        var YOU = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                YOU = STRUCT[i].sangsang;
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            enemy = PHONGS.phong1[1];
+                        } else { enemy = PHONGS.phong1[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].sangsang;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+
+                        if (PHONGS.phong2[0] == data) {
+                            enemy = PHONGS.phong2[1];
+                        } else { enemy = PHONGS.phong2[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].sangsang;
+
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            enemy = PHONGS.phong3[1];
+                        } else { enemy = PHONGS.phong3[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].sangsang;
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                }
+                break;
+            }
+        }
+        return EnemyLa * YOU;
+    }
+
+    function CHECKPLAYAGAIN(data) {
+
+        var enemy = data;
+        var EnemyLa = 0;
+        var YOU = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                YOU = STRUCT[i].playagain;
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            enemy = PHONGS.phong1[1];
+                        } else { enemy = PHONGS.phong1[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].playagain;
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+
+                        if (PHONGS.phong2[0] == data) {
+                            enemy = PHONGS.phong2[1];
+                        } else { enemy = PHONGS.phong2[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].playagain;
+
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            enemy = PHONGS.phong3[1];
+                        } else { enemy = PHONGS.phong3[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = STRUCT[i].playagain;
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = 0;
+                    }
+
+                }
+                break;
+            }
+        }
+        return EnemyLa * YOU;
+    }
+
+    function YEUCAUENEMY(data) {
+
+        var enemy = data;
+        var EnemyLa = "Chưa có đối thủ";
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data) {
+                if (STRUCT[i].vitriphong == 1) {
+                    if (PHONGS.phong1.length == 2) {
+                        if (PHONGS.phong1[0] == data) {
+                            enemy = PHONGS.phong1[1];
+                        } else { enemy = PHONGS.phong1[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = SESSIONUSER[i];
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = "Chưa có đối thủ";
+                    }
+
+                } else if (STRUCT[i].vitriphong == 2) {
+                    if (PHONGS.phong2.length == 2) {
+                        if (PHONGS.phong2[0] == data) {
+                            enemy = PHONGS.phong2[1];
+                        } else { enemy = PHONGS.phong2[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = SESSIONUSER[i];
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = "Chưa có đối thủ";
+                    }
+
+                } else if (STRUCT[i].vitriphong == 3) {
+                    if (PHONGS.phong3.length == 2) {
+                        if (PHONGS.phong3[0] == data) {
+                            enemy = PHONGS.phong3[1];
+                        } else { enemy = PHONGS.phong3[0]; }
+
+                        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+                            if (SESSIONID[i] == enemy) {
+                                EnemyLa = SESSIONUSER[i];
+                                //console.log("enemy la:" + EnemyLa);
+                                break;
+                            }
+                        }
+
+                    } else {
+                        EnemyLa = "Chưa có đối thủ";
+                    }
+
+                }
+                break;
+            }
+        }
+        return EnemyLa;
+    }
+
+    socket.on("REQYEUCAUCHECKSERVER", function(data) {
+        //console.log(data.COKI);
+        var temp = 0;
+        var ENE = YEUCAUENEMY(data.COKI);
+        var checkss = CHECKSS(data.COKI);
+        var controenemy = CHECKCONTROENEMY(data.COKI);
+        var shotenemy = CHECKSHOTENEMY(data.COKI);
+        var luot = CHECKLUOT(data.COKI);
+        var enymymap = SHIPENYMYMAP(data.COKI);
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data.COKI) {
+                socket.emit('RESYEUCAUCHECKSERVER', {
+                    DATANE: "Ban Da Yeu Cau check thanh cong" + i,
+                    emPHONG: phong,
+                    emVITRICONTROPHONG: STRUCT[i].vitriphong,
+                    emKEYVAOROOM: STRUCT[i].keyvaoroom,
+
+                    emCONTROPLAYERCREATE: STRUCT[i].controplayercreate,
+                    emSHOTLAYERCREATE: STRUCT[i].shotcreate,
+                    emKEYPLAYERCREATE: STRUCT[i].keycreate,
+
+                    emSHIPMAP: STRUCT[i].shipmap,
+                    emENEMY: ENE,
+                    emSS: checkss,
+
+                    emCONTROPLAYERFIGHT: STRUCT[i].controplayerfight,
+                    emSHOTLAYERFIGHT: STRUCT[i].shotfight,
+                    emCONTROENEMY: controenemy,
+                    emSHOTENEMY: shotenemy,
+                    emLUOT: luot,
+                    emSHIPMAPENYMY: enymymap,
+
+                });
+                temp = 1;
+            }
+            if (temp == 0 && i == -1) {
+                socket.emit('RESYEUCAUCHECKSERVER', {
+                    DATANE: "Ban khong co quyen check",
                 });
             }
         }
     });
-
+    //v7-
     socket.on('sendShipPos', function(data) {
-        if (data.player == 1) {
-            p1Ship = data.Arr;
-            console.log('added to p1Ship');
-        } else if (data.player == 2) {
-            p2Ship = data.Arr;
-            console.log('added to p2Ship');
-        } else
-            console.log('Khong tim thay tau');
+        //console.log(data);
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data.COOKIE) {
+                STRUCT[i].setShipMap(data.Arr);
+                STRUCT[i].setSangSang(1);
+                console.log("SS cua thang vua gui" + STRUCT[i].sangsang + " " + data.COOKIE);
+            }
+        }
+
+    });
+    socket.on('Playagain', function(data) {
+        //console.log(data);
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == data.COOKIE) {
+                STRUCT[i].setPlayAgain(1);
+                console.log("Playagain cua thang vua gui" + STRUCT[i].playagain + " " + data.COOKIE);
+                var CHECKPA = CHECKPLAYAGAIN(data.COOKIE);
+                socket.emit('RESPlayagain', {
+                    emPlayAgain: CHECKPA,
+
+                });
+            }
+        }
+
+    });
+    socket.on('CLEAR', function(data) {
+        //console.log(data);
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+
+            STRUCT[i].setPlayAgain(0);
+            STRUCT[i].setTrangThai("create");
+            STRUCT[i].setShotCreat(0);
+            STRUCT[i].setKeyCreat(0);
+            STRUCT[i].setConTroPlayerFight(1);
+            STRUCT[i].setSangSang(0);
+            STRUCT[i].setShotFight(0);
+            io.sockets.emit('CLEAROK', {});
+        }
     });
 });
 
 
-function XuLyDuLieuGuiLenP1(controcontrol) {
+function XuLyDuLieuGuiLen(controcontrol, controplayer1) {
     if (controcontrol == "L") {
         if (Math.abs(controplayer1 % 10) != 1) {
             controplayer1 -= 1;
@@ -326,7 +1051,7 @@ function XuLyDuLieuGuiLenP1(controcontrol) {
         shot = 1;
         key = 'O';
     } else if (controcontrol == "C") {
-        shot = 1;
+        shot = -1;
         key = 'C';
     } else {
         error = 1;
@@ -384,4 +1109,190 @@ function HienThiKetQuaLenAllClientP2() {
     }
     shot = 0;
     error = 0;
+}
+//++++++++++++++++Function GAME++++++++++++++++++++++++++++++++++++++++++++++++++++
+//---Chuc nang: Xu ly toan bo du lieu tu luc tao phong den luc ket thuc game-----//
+//---Tham so: 1. DuLieuGuiLen (U,D,L,R,O,C) 2.IDNguoiChoi (1,2,3,...)//
+//---Cach dung: Neu nhan du lieu thi se chay ham nay------------------------------
+function GAME(DuLieuGuiLen, IDNguoiChoi) {
+    if (DuLieuGuiLen != 'L' && DuLieuGuiLen != 'R' && DuLieuGuiLen != 'U' &&
+        DuLieuGuiLen != 'D' && DuLieuGuiLen != 'O' && DuLieuGuiLen != 'C') {
+        console.log("Du lieu gui len khong hop le: " + DuLieuGuiLen);
+    }
+    switch (STRUCT[IDNguoiChoi - 1].KiemTraTrangThai()) {
+        case 0:
+            console.log("Moi dang nhap thoi");
+            break;
+        case 1:
+            console.log("Dang o room");
+            var phongx = STRUCT[IDNguoiChoi - 1].vitriphong;
+            console.log("Phong hien tai: " + phongx);
+            console.log("Data gui len: " + DuLieuGuiLen);
+            if (DuLieuGuiLen == 'O') {
+                if (phong[phongx - 1] < 2) {
+                    console.log("Ban da vao phong: " + phongx);
+                    if (phongx == 1) {
+                        PHONGS.setPhong1(STRUCT[IDNguoiChoi - 1].username);
+                        phong[0] = PHONGS.phong1.length;
+                    } else if (phongx == 2) {
+                        PHONGS.setPhong2(STRUCT[IDNguoiChoi - 1].username);
+                        phong[1] = PHONGS.phong2.length;
+                    } else if (phongx == 3) {
+                        PHONGS.setPhong3(STRUCT[IDNguoiChoi - 1].username);
+                        phong[2] = PHONGS.phong3.length;
+                    }
+                    console.log(PHONGS.phong1[0] + " phong1");
+                    console.log(PHONGS.phong2 + " phong2");
+                    console.log(PHONGS.phong3 + " phong3");
+                    STRUCT[IDNguoiChoi - 1].setKeyVaoRoom("ok");
+                } else if (phong[controsophonghientai - 1] == 2) {
+                    STRUCT[IDNguoiChoi - 1].setKeyVaoRoom("full");
+                }
+            }
+            STRUCT[IDNguoiChoi - 1].setViTriPhong(JOINROOM(DuLieuGuiLen, phongx));
+            console.log("Mang phong hien tai: " + phong)
+            break;
+        case 2:
+            //STRUCT[data.P-1].setKeyVaoRoom("0"); // cho quay ve trang thai truoc
+            console.log("Dang tao map");
+            var controplayer1 = STRUCT[IDNguoiChoi - 1].controplayercreate;
+            if (DuLieuGuiLen == 'L') {
+                if (Math.abs(controplayer1 % 10) != 1) {
+                    controplayer1 -= 1;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
+                }
+                //key = 'L';
+                STRUCT[IDNguoiChoi - 1].setKeyCreat('L');
+            } else if (DuLieuGuiLen == 'R') {
+                if (Math.abs(controplayer1 % 10) != 0) {
+                    controplayer1 += 1;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
+                }
+                //key = 'R';
+                STRUCT[IDNguoiChoi - 1].setKeyCreat('R');
+            } else if (DuLieuGuiLen == 'U') {
+                if (Math.abs(Math.floor((controplayer1) / 10)) != 0 && controplayer1 != 10) {
+                    controplayer1 -= 10;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
+                }
+                //key = 'U';
+                STRUCT[IDNguoiChoi - 1].setKeyCreat('U');
+            } else if (DuLieuGuiLen == 'D') {
+                if (Math.abs(Math.floor((controplayer1) / 10)) != 9 && controplayer1 != 100) {
+                    controplayer1 += 10;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
+                } else if (controplayer1 == 90) {
+                    controplayer1 += 10;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
+                }
+                //key = 'D';
+                STRUCT[IDNguoiChoi - 1].setKeyCreat('D');
+            } else if (DuLieuGuiLen == 'O') {
+                //shot = 1;
+                var temp = STRUCT[IDNguoiChoi - 1].shotcreate;
+                temp += 1;
+                STRUCT[IDNguoiChoi - 1].setShotCreat(temp);
+                //key = 'O';
+                STRUCT[IDNguoiChoi - 1].setKeyCreat('O');
+            } else if (DuLieuGuiLen == 'C') {
+                //shot = 1;
+                var temp = STRUCT[IDNguoiChoi - 1].shotcreate;
+                temp += 1;
+                STRUCT[IDNguoiChoi - 1].setShotCreat(temp);
+                //key = 'C';
+                STRUCT[IDNguoiChoi - 1].setKeyCreat('C');
+            } else {
+                //error = 1;
+            }
+
+            break;
+        case 3:
+            console.log("Dang trong tran");
+            var controplayer1 = STRUCT[IDNguoiChoi - 1].controplayerfight;
+            if (DuLieuGuiLen == 'L') {
+                if (controplayer1 == 1) {
+                    controplayer1 = 100;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                } else {
+                    controplayer1 -= 1;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                }
+
+            } else if (DuLieuGuiLen == 'R') {
+                if (controplayer1 == 100) {
+                    controplayer1 = 1;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                } else {
+                    controplayer1 += 1;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                }
+            } else if (DuLieuGuiLen == 'U') {
+                if (Math.floor((controplayer1) / 10) == 0 || controplayer1 == 10) {
+                    controplayer1 += 90;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                } else {
+                    controplayer1 -= 10;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                }
+            } else if (DuLieuGuiLen == 'D') {
+                if ((Math.floor((controplayer1) / 10) == 9 || controplayer1 == 100) && controplayer1 != 90) {
+                    controplayer1 -= 90;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                } else {
+                    controplayer1 += 10;
+                    STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
+                }
+            } else if (DuLieuGuiLen == 'O') {
+                //shot = 1;
+                var temp = STRUCT[IDNguoiChoi - 1].shotfight;
+                temp += 1;
+                STRUCT[IDNguoiChoi - 1].setShotFight(temp);
+                // } else if (DuLieuGuiLen == 'C') {
+                //     //shot = 1;
+                //     var temp = STRUCT[IDNguoiChoi-1].shotcreate;
+                //         temp+=1;
+                //     STRUCT[IDNguoiChoi-1].setShotCreat(temp);
+                // } else {
+                //error = 1;
+            }
+            break;
+        case 4:
+            day = "Thursday";
+            break;
+    }
+}
+
+//++++++++++++++++Function FYEUCAUCHECKSERVER++++++++++++++++++++++++++++++++++++++++++++++++++++
+//---Chuc nang: Yeu cau cac client check trang thai cua client do tren SERVER-----//
+//---Tham so: Khong//
+//---Cach dung: Dc dung khi co du lieu gui len hoac khi lan dau load trang html moi--------------
+function FYEUCAUCHECKSERVER() {
+    io.sockets.emit('YEUCAUCHECKSERVER', {
+        CHECK: 1,
+    });
+}
+
+function XuLyConTroFight(controcontrol) {
+
+    if (controcontrol == "L" || controcontrol == "R" || controcontrol == "U" || controcontrol == "D" || controcontrol == "O" || controcontrol == "C") {
+        if (controcontrol == "L") {
+            if (controplayer1 == 1) {
+                controplayer1 = 100;
+            } else { controplayer1 -= 1; }
+        } else if (controcontrol == "R") {
+            if (controplayer1 == 100) {
+                controplayer1 = 1;
+            } else { controplayer1 += 1; }
+        } else if (controcontrol == "U") {
+            if (Math.floor((controplayer1) / 10) == 0 || controplayer1 == 10) {
+                controplayer1 += 90;
+            } else { controplayer1 -= 10; }
+        } else if (controcontrol == "D") {
+            if (Math.floor((controplayer1) / 10) == 9 || controplayer1 == 100) {
+                controplayer1 -= 90;
+            } else { controplayer1 += 10; }
+        } else if (controcontrol == "O") {
+            shot = 1;
+        }
+    } else { error = 1; }
 }

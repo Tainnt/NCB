@@ -13,13 +13,38 @@
 <body>
     <!-- kHAI BAO GIAO DIEN BAN DO CUA PLAYER1 , PLAYER2, HIEU UNG TEN LUA, HIEU UNG CHUC MUNG 
 The canvas la the HTML dung de tao hieu ung chuyen dong theo toa do pixel-->
-    <div style="padding-left: 150px">
-        <p style="font-size: 23px; float: left;">Người chơi 1:&#160</p>
-        <p id="id_cua_toi_1" style="font-size: 23px ; color: #7c0061"></p>
-        <p style="font-size: 23px; padding-left: 660px">Người chơi 2:&#160</p>
-        <p id="id_cua_toi_2" style="font-size: 23px ; color: #7c0061"></p>
-        <button style="margin-left: 400px">Nhấn Cancel để thoát trận</button>
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- <span class="close">&times;</span> -->
+                <h2 id="winorlose" style="margin-left: 38%; font-size: 100px">WIN</h2>
+            </div>
+            <div class="modal-body">
+                <p id="soluotban" style="font-size: 40px">Số lượt bắn: </p>
+                <p id="soluotbantrung" style="font-size: 40px">Số lượt bắn trúng: </p>
+            </div>
+            <div style="margin-top: 25%; margin-left: 40%">
+                <button onclick="PlayAgain()" id="playagain" style="font-size: 30px;">PLAY AGAIN</button>
+            </div>
+        </div>
+
     </div>
+    <div style=" padding-top: 30px">
+        <p style="font-size: 23px; float: left;padding-left: 150px;">Bạn:&#160</p>
+        <p id="id_cua_toi_1" style="font-size: 23px ; color: #337AB7;float: left;"></p>
+        <p style="font-size: 23px; padding-left: 530px;float: left;">Đối thủ:&#160</p>
+        <p id="id_cua_toi_2" style="font-size: 23px ; color: #2ecc71;"></p>
+        <!-- <button style="margin-left: 395px; clear: left">Nhấn Cancel để thoát trận</button>-->
+    </div>
+    <div>
+        <p style="font-size: 40px;margin-left: 620px" id="demo"></p>
+        <button style="float: left" id="logout">Thoát</button>
+        <p style="font-size: 20px;margin-left: 600px" id="demo2"></p>
+    </div>
+
+
     <canvas id="player1" width="620" height="620" style="position: absolute;z-index: -1; clear: left;"></canvas>
     <canvas id="player2" width="1260" height="620" style="position: absolute;z-index: -1;"> </canvas>
     <canvas id="hieuungshot" width="1270" height="630" style="position: absolute;z-index: -1; border:5px solid #fff;"> </canvas>
