@@ -4,7 +4,7 @@ phong[1] = 0;
 phong[2] = 0;
 var sophong = 3; //All phong = lenght(phong)
 var controsophonghientai = 1; //
-var socketroom = io.connect("http://localhost:3000");
+var socketroom = io.connect("http://doanncb.ddns.net:3000");
 var room = document.getElementById("room");
 var hieuungroom = document.getElementById("hieuungroom")
 var roomtx = room.getContext("2d");
@@ -53,7 +53,7 @@ $('#logout').on('click', function() {
     window.location = '/logout';
 });
 
-socketroom.on("NumOfGamepad", function(data) {
+socketroom.on("gamepadArr", function(data) {
     // console.log(data);
     var index = 0;
     for (index = 0; index < data.ss.length; index++) {
@@ -64,13 +64,16 @@ socketroom.on("NumOfGamepad", function(data) {
         $("#listGamepad").empty();
         if (data.arr.length != 0) {
             for (let index = 0; index < data.arr.length; index++) {
-                $("#listGamepad").append("<button id=\"gp" + (index + 1) + "\">Gamepad " + data.arr[index] + "</button>");
+                $("#listGamepad").append("<button class=\"btn\" id=\"gp" + (index + 1) + "\">Gamepad " + data.arr[index] + "</button>");
                 $("#gp" + (index + 1)).on('click', function() {
-                    alert('Bạn đã chọn Gamepad' + data.arr[index]);
+                    alert('Bạn đã chọn Gamepad ' + data.arr[index]);
                     socketroom.emit('gamepadSelected', { i: index, COKI: getCookie("Bantausession") });
                     $("#listGamepad").hide();
                     $("#selectGamepad").hide();
                 });
+                if (data.id.includes(data.arr[index])) {
+                    $("#gp" + (index + 1)).attr("disabled", true);
+                }
             }
         } else
             $("#listGamepad").append("Chưa có tay cầm nào");

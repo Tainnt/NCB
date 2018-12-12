@@ -31,60 +31,165 @@ server.listen(3000, function() {
 
 app.get('/', function(request, response) {
     sess = request.session;
-    sess.username ? response.redirect('/room') : response.sendFile(__dirname + '/views/index.html');
+    // sess.username ? response.redirect('/room') : response.sendFile(__dirname + '/views/index.html');
+    var temp = 0;
+    for (var i = SESSIONID.length - 1; i >= 0; i--) {
+        if (SESSIONID[i] == request.sessionID) {
+            if (STRUCT[i].KiemTraTrangThai() == 0) {
+                response.sendFile(__dirname + '/views/index.html');
+                // response.redirect('/');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 1) {
+                // response.sendFile(__dirname + '/views/room.html');
+                response.redirect('/room')
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 2) {
+                // response.sendFile(__dirname + '/views/createMap.html');
+                response.redirect('/create');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 3) {
+                // response.sendFile(__dirname + '/views/fight.html');
+                response.redirect('/fight');
+                temp = 1;
+            }
+            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+        }
+    }
+    if (temp == 0) {
+        response.sendFile(__dirname + '/views/index.html');
+    }
 });
 
 app.get('/room', function(request, response) {
     sess = request.session;
-    sess.username ? response.sendFile(__dirname + '/views/room.html') : response.redirect('/');
+    // sess.username ? response.sendFile(__dirname + '/views/room.html') : response.redirect('/');
     if (sess.username) {
         //v7+
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == request.sessionID) {
-                console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+                //console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
                 if (STRUCT[i].KiemTraTrangThai() == 0) {
                     STRUCT[i].setTrangThai("room");
                 }
-                console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+                //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
             }
         }
         //v7-
+    }
+    var temp = 0;
+    for (var i = SESSIONID.length - 1; i >= 0; i--) {
+        if (SESSIONID[i] == request.sessionID) {
+            if (STRUCT[i].KiemTraTrangThai() == 0) {
+                response.sendFile(__dirname + '/views/index.html');
+                // response.redirect('/');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 1) {
+                response.sendFile(__dirname + '/views/room.html');
+                // response.redirect('/room')
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 2) {
+                // response.sendFile(__dirname + '/views/createMap.html');
+                response.redirect('/create');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 3) {
+                // response.sendFile(__dirname + '/views/fight.html');
+                response.redirect('/fight');
+                temp = 1;
+            }
+            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+        }
+    }
+    if (temp == 0) {
+        response.sendFile(__dirname + '/views/index.html');
     }
 });
 
 app.get('/create', function(request, response) {
     sess = request.session;
-    sess.username ? response.sendFile(__dirname + '/views/createMap.html') : response.redirect('/');
+    // sess.username ? response.sendFile(__dirname + '/views/createMap.html') : response.redirect('/');
     if (sess.username) {
         //v7+
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == request.sessionID) {
-                console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+                //console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
                 if (STRUCT[i].KiemTraTrangThai() == 1) {
                     STRUCT[i].setTrangThai("create");
                 }
-                console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+                //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
             }
         }
         //v7-
+    }
+
+    var temp = 0;
+    for (var i = SESSIONID.length - 1; i >= 0; i--) {
+        if (SESSIONID[i] == request.sessionID) {
+            if (STRUCT[i].KiemTraTrangThai() == 0) {
+                response.sendFile(__dirname + '/views/index.html');
+                // response.redirect('/');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 1) {
+                // response.sendFile(__dirname + '/views/room.html');
+                response.redirect('/room')
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 2) {
+                response.sendFile(__dirname + '/views/createMap.html');
+                // response.redirect('/create');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 3) {
+                // response.sendFile(__dirname + '/views/fight.html');
+                response.redirect('/fight');
+                temp = 1;
+            }
+            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+        }
+    }
+    if (temp == 0) {
+        response.sendFile(__dirname + '/views/index.html');
     }
 });
 
 app.get('/fight', function(request, response) {
     sess = request.session;
-    sess.username ? response.sendFile(__dirname + '/views/fight.html') : response.redirect('/');
+    // sess.username ? response.sendFile(__dirname + '/views/fight.html') : response.redirect('/');
     if (sess.username) {
         //v7+
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == request.sessionID) {
-                console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai truoc");
+                //console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai truoc");
                 if (STRUCT[i].KiemTraTrangThai() == 2) {
                     STRUCT[i].setTrangThai("fight");
                 }
-                console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai sau");
+                //console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai sau");
             }
         }
         //v7-
+    }
+    var temp = 0;
+    for (var i = SESSIONID.length - 1; i >= 0; i--) {
+        if (SESSIONID[i] == request.sessionID) {
+            if (STRUCT[i].KiemTraTrangThai() == 0) {
+                response.sendFile(__dirname + '/views/index.html');
+                // response.redirect('/');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 1) {
+                // response.sendFile(__dirname + '/views/room.html');
+                response.redirect('/room')
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 2) {
+                // response.sendFile(__dirname + '/views/create.html');
+                response.redirect('/create');
+                temp = 1;
+            } else if (STRUCT[i].KiemTraTrangThai() == 3) {
+                response.sendFile(__dirname + '/views/fight.html');
+                // response.redirect('/fight');
+                temp = 1;
+            }
+            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
+        }
+    }
+    if (temp == 0) {
+        response.sendFile(__dirname + '/views/index.html');
     }
     //FYEUCAUCHECKSERVER();
 });
@@ -98,18 +203,30 @@ app.get('/gamepad', function(request, response) {
 });
 
 app.get('/logout', function(request, response) {
-    SESSIONID.splice(SESSIONID.indexOf(request.session), 1);
-    numOfGamepad.push(USERGAMEPAD[SESSIONUSER.indexOf(request.session.username)] + "");
-    numOfGamepad.sort();
-    USERGAMEPAD.splice(SESSIONUSER.indexOf(request.session.username), 1);
-    SESSIONUSER.splice(SESSIONUSER.indexOf(request.session.username), 1);
-    console.log("SESSIONUSER: " + SESSIONUSER);
-    console.log("USERGAMEPAD: " + USERGAMEPAD);
-    console.log("numOfGamepad: " + numOfGamepad);
-    io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
-    request.session.destroy((err) => {
-        err ? console.log(err) : response.redirect('/')
-    });
+    checkID.splice(checkUser.indexOf(request.session.username), 1);
+    // gamepadArr.push(userGamepad[checkUser.indexOf(request.session.username)] + "");
+    // gamepadArr.sort();
+    userGamepad.splice(checkUser.indexOf(request.session.username), 1);
+    // SESSIONUSER.splice(SESSIONUSER.indexOf(request.session.username), 1);
+    checkUser.splice(checkUser.indexOf(request.session.username), 1);
+    for (var i = SESSIONID.length - 1; i >= 0; i--) {
+        if (SESSIONID[i] == request.sessionID) {
+            STRUCT[i].setTrangThai('');
+        }
+    }
+    console.log("checkUser: " + checkUser);
+    console.log("checkID: " + checkID);
+    console.log("userGamepad: " + userGamepad);
+    console.log("gamepadArr: " + gamepadArr);
+    io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+    // request.session.destroy((err) => {
+    //     err ? console.log(err) : response.redirect('/')
+    // });
+    response.redirect('/');
+});
+
+app.get('/test', function(request, response) {
+    socket.emit('hit', { hit: true, COKI: x });
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -118,7 +235,11 @@ app.post('/login', urlencodedParser, function(req, res) {
 
     db.selectPlayer(req.body.username, req.body.password, function(isExist) {
         if (isExist) {
-            if (!SESSIONUSER.includes(req.body.username)) {
+            if (!checkUser.includes(req.body.username)) {
+                checkUser.push(req.body.username);
+                checkID.push(req.sessionID);
+                console.log("checkUser: " + checkUser);
+                console.log("checkID: " + checkID);
                 res.send({ data: 1, ID: req.sessionID, usr: req.body.username });
                 var temp = 0;
                 for (var i = SESSIONID.length - 1; i >= 0; i--) {
@@ -149,8 +270,8 @@ app.post('/login', urlencodedParser, function(req, res) {
             res.send({ data: 0 });
         }
         //console.log(req.session.username);
-        console.log("SESSIONID: " + SESSIONID);
-        console.log("SESSIONUSER: " + SESSIONUSER);
+        // console.log("SESSIONID: " + SESSIONID);
+        // console.log("SESSIONUSER: " + SESSIONUSER);
     })
 
     sess = req.session;
@@ -200,14 +321,16 @@ app.post('/', function(request, response) {
 
         //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
         {
-            // FYEUCAUCHECKSERVER();
-            // GAME(data_from_console.DATA, data_from_console.P);
+            FYEUCAUCHECKSERVER();
+            var index = userGamepad.indexOf(data_from_console.MAC);
+            var ID = SESSIONID.indexOf(checkID[index]);
+            GAME(data_from_console.DATA, ID);
         }
 
     });
 });
 
-var numOfGamepad = [];
+var gamepadArr = [];
 app.post('/board-info', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
@@ -224,26 +347,27 @@ app.post('/board-info', function(request, response) {
         response.setHeader('Content-Type', 'application/json');
 
         // if (body == 'b_i') {
-        //     numOfGamepad.push(numOfGamepad.length + 1);
-        //     post_data = JSON.stringify(numOfGamepad.length + "");
+        //     gamepadArr.push(gamepadArr.length + 1);
+        //     post_data = JSON.stringify(gamepadArr.length + "");
         //     response.send(post_data);
-        //     // io.sockets.emit("NumOfGamepad", { arr: numOfGamepad });
-        //     io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+        //     // io.sockets.emit("gamepadArr", { arr: gamepadArr });
+        //     io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: SESSIONID, id: userGamepad });
         // } else {
         //     post_data = JSON.stringify("error");
         //     response.send(post_data);
         // }
         console.log(body);
-        numOfGamepad.push(body);
-        numOfGamepad.sort();
-        // post_data = JSON.stringify(numOfGamepad.length + "");
+        if (!gamepadArr.includes(body))
+            gamepadArr.push(body);
+        // gamepadArr.sort();
+        // post_data = JSON.stringify(gamepadArr.length + "");
         post_data = JSON.stringify("connected");
         response.send(post_data);
-        io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+        io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
 });
 
-var vibrator = true;
+var vibrator = false;
 app.post('/hit-or-not', function(request, response) {
     const { headers, method, url } = request;
     let body = [];
@@ -260,16 +384,39 @@ app.post('/hit-or-not', function(request, response) {
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
-
-        if (body == 'H?') {
-            if (vibrator) {
-                post_data = JSON.stringify("H:O");
+        console.log(body);
+        if (gamepadArr.includes(body)) {
+            var flag = false;
+            io.sockets.on('hit', function(data) {
+                if (data.hit) {
+                    var index = 0;
+                    for (index = 0; index < checkID.length; index++) {
+                        if (checkID[index] == data.COKI)
+                            break;
+                    }
+                    console.log("Gamepad vibrator: " + gamepadArr[index])
+                    post_data = JSON.stringify(gamepadArr[index]);
+                    response.send(post_data);
+                    flag = true;
+                }
+            });
+            if (!flag) {
+                post_data = JSON.stringify("");
                 response.send(post_data);
             }
         } else {
-            post_data = JSON.stringify("error");
+            post_data = JSON.stringify("Can't find gamepad");
             response.send(post_data);
         }
+        // if (body == 'H?') {
+        //     if (vibrator) {
+        //         post_data = JSON.stringify("H:O");
+        //         response.send(post_data);
+        //     }
+        // } else {
+        //     post_data = JSON.stringify("error");
+        //     response.send(post_data);
+        // }
     });
 });
 
@@ -341,7 +488,6 @@ function User() {
         this.playagain = again;
     };
 
-
     this.KiemTraTrangThai = function() {
         if (this.trangthai == "room") {
             return 1;
@@ -400,7 +546,9 @@ function TPHONG() {
 //V7-
 SESSIONID = [];
 SESSIONUSER = [];
-USERGAMEPAD = [];
+userGamepad = [];
+var checkUser = [];
+var checkID = [];
 var useronline = 0;
 //so do tau chien cua player1 1:co - 0:khong
 var p1Ship = [];
@@ -419,7 +567,6 @@ var phong = []; // chua mang phong
 phong[0] = 0;
 phong[1] = 0;
 phong[2] = 0;
-
 
 //++++++++++++++++Function JOINROOM++++++++++++++++++++++++++++++++++++++++++++++++++++
 //---Chuc nang: Quan ly con tro trong trang room-----//
@@ -441,13 +588,13 @@ io.on("connection", function(socket) {
     YEUCAUUSER();
     //socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
     FYEUCAUCHECKSERVER();
-    socket.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+    socket.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     socket.on('gamepadSelected', function(data) {
-        USERGAMEPAD[SESSIONID.indexOf(data.COKI)] = numOfGamepad[data.i];
-        console.log("SESSIONUSER: " + SESSIONUSER);
-        console.log("USERGAMEPAD: " + USERGAMEPAD);
-        numOfGamepad.splice(data.i, 1);
-        io.sockets.emit("NumOfGamepad", { arr: numOfGamepad, ss: SESSIONID, id: USERGAMEPAD });
+        userGamepad[checkID.indexOf(data.COKI)] = gamepadArr[data.i];
+        console.log("checkUser: " + checkUser);
+        console.log("userGamepad: " + userGamepad);
+        // gamepadArr.splice(data.i, 1);
+        io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     //Nhung cau lenh trong ham nay dc su dung trong ham POST
     socket.on('SendTextToSerVer', function(data) {
@@ -1020,6 +1167,7 @@ io.on("connection", function(socket) {
             STRUCT[i].setConTroPlayerFight(1);
             STRUCT[i].setSangSang(0);
             STRUCT[i].setShotFight(0);
+            STRUCT[i].setConTroPlayerCreat(0);
             io.sockets.emit('CLEAROK', {});
         }
     });

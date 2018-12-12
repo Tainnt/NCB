@@ -2,7 +2,7 @@
 var table = [10, 70, 130, 190, 250, 310, 370, 430, 490, 550];
 var table = [10, 70, 130, 190, 250, 310, 370, 430, 490, 550];
 
-var shipLengthArr = [2, 2];
+var shipLengthArr = [4, 4];
 var allss = 0;
 var shipNameR = [document.getElementById("r2"), document.getElementById("r3"), document.getElementById("r4")];
 var shipNameD = [document.getElementById("d2"), document.getElementById("d3"), document.getElementById("d4")];
@@ -232,7 +232,7 @@ function DeleteShip(pt) {
 }
 
 //Ket noi den Socket server
-var socket = io.connect("http://localhost:3000");
+var socket = io.connect("http://doanncb.ddns.net:3000");
 var userla;
 var x = getCookie("Bantausession");
 var shotx = 0;

@@ -52,6 +52,9 @@ var mtieuko = document.getElementById("mtko");
 var chucmung = document.getElementById("chucmung");
 var chucmayman = document.getElementById("chucmayman");
 
+var shipNameR = [document.getElementById("r2"), document.getElementById("r3"), document.getElementById("r4")];
+var shipNameD = [document.getElementById("d2"), document.getElementById("d3"), document.getElementById("d4")];
+
 var r1 = document.getElementById("r1");
 var r2 = document.getElementById("r2");
 var r3 = document.getElementById("r3");
@@ -93,7 +96,7 @@ function hieuungchucmungp1(time, hieuung) {
             time -= 20;
             hieuungchucmungp1(time, hieuung);
         }
-    }, 10)
+    }, 5)
 }
 
 function hieuungchucmungp2(time, hieuung) {
@@ -109,7 +112,7 @@ function hieuungchucmungp2(time, hieuung) {
             time += 20;
             hieuungchucmungp2(time, hieuung);
         }
-    }, 10)
+    }, 5)
 }
 //Ham nay de ve muc tieu
 function dohoamuctieu(newXp2, newYp2, OKorNO) {
@@ -131,8 +134,8 @@ function dohoashot(newX, newY, data) { //data la gia tri gui qua 0-100.
         vao1lan = false;
     }
     setTimeout(function() {
-        posX += vx * 1 / 300;
-        posY += vy * 1 / 300;
+        posX += vx * 1 / 20;
+        posY += vy * 1 / 20;
         hieuungctx.clearRect(0, 0, hieuung.width, hieuung.height);
         hieuungctx.beginPath();
         hieuungctx.drawImage(tenlua, posX, posY, 60, 60);
@@ -141,11 +144,11 @@ function dohoashot(newX, newY, data) { //data la gia tri gui qua 0-100.
         } else {
             if (data >= 1) {
                 player2ctx.drawImage(imgco, newX, newY);
-                hieuungchucmungp1(500, chucmung);
+                // hieuungchucmungp1(500, chucmung);
                 muctieuctx.drawImage(mtieuko, newX, newY, 60, 60);
             } else {
                 player2ctx.drawImage(imgkhong, newX, newY);
-                hieuungchucmungp1(500, chucmayman);
+                // hieuungchucmungp1(500, chucmayman);
             }
             posX = toadophaoXplayer1;
             posY = toadophaoYplayer1;
@@ -165,8 +168,8 @@ function dohoashot2(newX, newY, data) { //data la gia tri gui qua 0-100.
         vao1lan2 = false;
     }
     setTimeout(function() {
-        posX2 += vx2 * 1 / 300;
-        posY2 += vy2 * 1 / 300;
+        posX2 += vx2 * 1 / 20;
+        posY2 += vy2 * 1 / 20;
         hieuungctx.clearRect(0, 0, hieuung.width, hieuung.height);
         hieuungctx.beginPath();
         hieuungctx.drawImage(tenlua2, posX2, posY2, 60, 60);
@@ -175,11 +178,11 @@ function dohoashot2(newX, newY, data) { //data la gia tri gui qua 0-100.
         } else {
             if (data >= 1) {
                 ctx.drawImage(imgco, newX, newY);
-                hieuungchucmungp2(-500, chucmung);
+                // hieuungchucmungp2(-500, chucmung);
                 muctieuctx.drawImage(mtieuko, newX, newY, 60, 60);
             } else {
                 ctx.drawImage(imgkhong, newX, newY);
-                hieuungchucmungp2(-500, chucmayman);
+                // hieuungchucmungp2(-500, chucmayman);
             }
             posX2 = toadophaoXplayer2;
             posY2 = toadophaoYplayer2;
@@ -222,7 +225,7 @@ function LoadShip(start, end, arr) {
     }
 }
 //Ket noi den Socket server
-var socket = io.connect("http://localhost:3000");
+var socket = io.connect("http://doanncb.ddns.net:3000");
 
 // socket.on('ShipPos', function(data) {
 //     LoadShip(0, 99, data.P1);
@@ -381,10 +384,14 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             if (shotorno2[(Math.abs(requestData - 1))] == 0) {
                 dohoashot(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], CONTRO1);
                 shotorno2[(Math.abs(requestData - 1))] += 1;
+                checkDestroyShip(requestData - 1, P2SHIP, shotorno2, 1);
                 t = timer;
                 // turn = -turn;
                 if (P2SHIP[Math.abs(requestData - 1)] == 'N') {
                     turn = -turn;
+                    socket.emit('hit', { hit: false, COKI: x });
+                } else {
+                    socket.emit('hit', { hit: true, COKI: x });
                 }
 
                 if (CONTRO1 > 0) {
@@ -410,9 +417,12 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
                 dohoashot2(toadoxplayer1[(Math.abs(requestData2 - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData2 - 1)) / 10)], CONTRO2);
                 shotorno[(Math.abs(requestData2 - 1))] += 1;
                 t = timer;
+                checkDestroyShip(requestData2 - 1, P1SHIP, shotorno, 2);
                 // turn = -turn;
                 if (P1SHIP[Math.abs(requestData2 - 1)] == 'N') {
                     turn = -turn;
+                } else {
+                    socket.emit('hit', { COKI: x });
                 }
                 if (CONTRO2 > 0) {
                     P2WIN += 1;
@@ -436,6 +446,108 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
         setTimeout(myFunction, 3000);
     }
 });
+
+function checkDestroyShip(pt, shipArr, shotOrNoArr, player) {
+    switch (shipArr[pt]) {
+        case 'H':
+            for (var i = 0; i < 4; i++) {
+                if (shotOrNoArr[pt - i] == 0) {
+                    break;
+                }
+                if (shipArr[pt - i] == 'R2' || shipArr[pt - i] == 'R3' || shipArr[pt - i] == 'R4') {
+                    var flag = false;
+                    for (let index = 0; index < shipArr[pt - i][1]; index++) {
+                        if (shotOrNoArr[pt - i + index] == 0) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        var iName = Number(shipArr[pt - i][1]) - 2;
+                        if (player == 1) {
+                            player2ctx.drawImage(shipNameR[iName], toadoxplayer2[(pt - i) % 10], toadoyplayer2[Math.floor((pt - i) / 10)], 60 * shipArr[pt - i][1], 60);
+                        } else
+                            player2ctx.drawImage(shipNameR[iName], toadoxplayer1[(pt - i) % 10], toadoyplayer1[Math.floor((pt - i) / 10)], 60 * shipArr[pt - i][1], 60);
+                    }
+                }
+            }
+            break;
+        case 'V':
+            var destroyLen = 0;
+            for (var i = 0; i < 40; i += 10) {
+                if (shotOrNoArr[pt - i] == 0) {
+                    break;
+                }
+                if (shipArr[pt - i] == 'D2' || shipArr[pt - i] == 'D3' || shipArr[pt - i] == 'D4') {
+                    var flag = false;
+                    for (let index = 0; index < (shipArr[pt - i][1]) * 10; index += 10) {
+                        if (shotOrNoArr[pt - i + index] == 0) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (!flag) {
+                        var iName = Number(shipArr[pt - i][1]) - 2;
+                        if (player == 1) {
+                            player2ctx.drawImage(shipNameD[iName], toadoxplayer2[(pt - i) % 10], toadoyplayer2[Math.floor((pt - i) / 10)], 60, 60 * shipArr[pt - i][1]);
+                        } else {
+                            player2ctx.drawImage(shipNameD[iName], toadoxplayer1[(pt - i) % 10], toadoyplayer1[Math.floor((pt - i) / 10)], 60, 60 * shipArr[pt - i][1]);
+                        }
+                    }
+                }
+            }
+            break;
+        case 'R2':
+        case 'R3':
+        case 'R4':
+            var flag = false;
+            for (let index = 0; index < shipArr[pt][1]; index++) {
+                if (shotOrNoArr[pt + index] == 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                var iName = Number(shipArr[pt][1]) - 2;
+                if (player == 1) {
+                    player2ctx.drawImage(shipNameR[iName], toadoxplayer2[(pt) % 10], toadoyplayer2[Math.floor((pt) / 10)], 60 * shipArr[pt][1], 60);
+                } else {
+                    player2ctx.drawImage(shipNameR[iName], toadoxplayer1[(pt) % 10], toadoyplayer1[Math.floor((pt) / 10)], 60 * shipArr[pt][1], 60);
+                }
+
+            }
+            break;
+        case 'D2':
+        case 'D3':
+        case 'D4':
+            var flag = false;
+            for (let index = 0; index < (shipArr[pt][1]) * 10; index += 10) {
+                if (shotOrNoArr[pt + index] == 0) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                var iName = Number(shipArr[pt][1]) - 2;
+                if (player == 1) {
+                    player2ctx.drawImage(shipNameD[iName], toadoxplayer2[(pt) % 10], toadoyplayer2[Math.floor((pt) / 10)], 60, 60 * shipArr[pt][1]);
+                } else {
+                    player2ctx.drawImage(shipNameD[iName], toadoxplayer1[(pt) % 10], toadoyplayer1[Math.floor((pt) / 10)], 60, 60 * shipArr[pt][1]);
+                }
+            }
+            break;
+        case 'S':
+            if (player == 1) {
+                player2ctx.drawImage(r1, toadoxplayer2[(pt) % 10], toadoyplayer2[Math.floor((pt) / 10)], 60, 60);
+            } else {
+                player2ctx.drawImage(r1, toadoxplayer1[(pt) % 10], toadoyplayer1[Math.floor((pt) / 10)], 60, 60);
+            }
+
+            break;
+        default:
+            break;
+    }
+}
 
 function CHECKINTERVAL() {
     setInterval(function() {
