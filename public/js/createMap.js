@@ -232,7 +232,7 @@ function DeleteShip(pt) {
 }
 
 //Ket noi den Socket server
-var socket = io.connect("http://localhost:3000");
+var socket = io.connect("http://doanncb.ddns.net:3000");
 var userla;
 var x = getCookie("Bantausession");
 var shotx = 0;

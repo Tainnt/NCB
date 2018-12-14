@@ -4,7 +4,7 @@ phong[1] = 0;
 phong[2] = 0;
 var sophong = 3; //All phong = lenght(phong)
 var controsophonghientai = 1; //
-var socketroom = io.connect("http://localhost:3000");
+var socketroom = io.connect("http://doanncb.ddns.net:3000");
 var room = document.getElementById("room");
 var hieuungroom = document.getElementById("hieuungroom")
 var roomtx = room.getContext("2d");
