@@ -226,7 +226,7 @@ app.get('/logout', function(request, response) {
 });
 
 app.get('/test', function(request, response) {
-    socket.emit('hit', { hit: true, COKI: x });
+    io.sockets.emit('hit', { hit: true, COKI: x });
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
