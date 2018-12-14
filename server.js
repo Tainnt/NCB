@@ -324,15 +324,13 @@ app.post('/', function(request, response) {
 
             console.log("id: " + reqID);
             console.log("reqKey: " + reqKey);
-        }
-        //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
-        {
+            //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
             FYEUCAUCHECKSERVER();
             var index = userGamepad.indexOf(reqID);
             var ID = SESSIONID.indexOf(checkID[index]);
-            GAME(reqKey, ID);
+            console("id nguoi choi: " + ID);
+            //GAME(reqKey, ID);
         }
-
     });
 });
 
