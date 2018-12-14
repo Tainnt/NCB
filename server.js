@@ -361,7 +361,8 @@ app.post('/board-info', function(request, response) {
             gamepadArr.push(body);
         // gamepadArr.sort();
         // post_data = JSON.stringify(gamepadArr.length + "");
-        post_data = JSON.stringify("connected");
+        // post_data = JSON.stringify("connected");
+        post_data = "\"connected\"";
         response.send(post_data);
         io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
