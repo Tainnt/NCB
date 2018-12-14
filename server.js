@@ -360,7 +360,7 @@ app.post('/board-info', function(request, response) {
         //     post_data = JSON.stringify("error");
         //     response.send(post_data);
         // }
-        console.log(body);
+        // console.log(body);
         if (!gamepadArr.includes(body))
             gamepadArr.push(body);
         // gamepadArr.sort();
