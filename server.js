@@ -328,7 +328,7 @@ app.post('/', function(request, response) {
             FYEUCAUCHECKSERVER();
             var index = userGamepad.indexOf(reqID);
             var ID = SESSIONID.indexOf(checkID[index]);
-            console("id nguoi choi: " + ID);
+            console.log("id nguoi choi: " + ID);
             //GAME(reqKey, ID);
         }
     });
