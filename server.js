@@ -319,8 +319,8 @@ app.post('/', function(request, response) {
         data_from_console = JSON.stringify(responseBody);
         if (data_from_console.length != 0) {
             console.log("data_from_console: " + data_from_console);
-            var reqID = data_from_console[0];
-            var reqKey = mang.slice(2, 8);
+            var reqKey = data_from_console[1];
+            var reqID = data_from_console.slice(3, 8);
 
             console.log("id: " + reqID);
             console.log("reqKey: " + reqKey);
