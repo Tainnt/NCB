@@ -317,14 +317,20 @@ app.post('/', function(request, response) {
 
         //post_data = JSON.stringify(responseBody);
         data_from_console = JSON.stringify(responseBody);
-        console.log(data_from_console);
+        if (data_from_console.length != 0) {
+            console.log("data_from_console: " + data_from_console);
+            var reqID = data_from_console[0];
+            var reqKey = mang.slice(2, 8);
 
+            console.log("id: " + reqID);
+            console.log("reqKey: " + reqKey);
+        }
         //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
         {
             FYEUCAUCHECKSERVER();
-            var index = userGamepad.indexOf(data_from_console.MAC);
+            var index = userGamepad.indexOf(reqID);
             var ID = SESSIONID.indexOf(checkID[index]);
-            GAME(data_from_console.DATA, ID);
+            GAME(reqKey, ID);
         }
 
     });
