@@ -226,8 +226,8 @@ app.get('/logout', function(request, response) {
 });
 
 app.get('/test', function(request, response) {
-    console.log("testttttttttt: " + request.session);
-    io.sockets.emit('hit', { hit: true, COKI: request.session });
+    console.log("testttttttttt: " + request.session.sessionID);
+    io.sockets.emit('hit', { hit: true, COKI: request.session.sessionID });
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
