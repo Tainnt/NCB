@@ -327,9 +327,9 @@ app.post('/', function(request, response) {
             //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
             FYEUCAUCHECKSERVER();
             var index = userGamepad.indexOf(reqID);
-            var ID = SESSIONID.indexOf(checkID[index]);
+            var ID = SESSIONID.indexOf(checkID[index]) + 1;
             console.log("id nguoi choi: " + ID);
-            //GAME(reqKey, ID);
+            GAME(reqKey, ID);
         }
     });
 });
