@@ -360,7 +360,7 @@ app.post('/board-info', function(request, response) {
         //     post_data = JSON.stringify("error");
         //     response.send(post_data);
         // }
-        // console.log(body);
+        console.log(body);
         if (!gamepadArr.includes(body))
             gamepadArr.push(body);
         // gamepadArr.sort();
@@ -389,7 +389,7 @@ app.post('/hit-or-not', function(request, response) {
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
-        console.log(body);
+        // console.log(body);
         if (gamepadArr.includes(body)) {
             var flag = false;
             io.sockets.on('hit', function(data) {
