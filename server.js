@@ -226,9 +226,7 @@ app.get('/logout', function(request, response) {
 });
 
 app.get('/test', function(request, response) {
-    console.log("testttttttttt: " + request.sessionID);
     io.sockets.emit('hit', { hit: true, COKI: request.sessionID });
-    response.write("session: " + request.sessionID);
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -368,9 +366,11 @@ app.post('/board-info', function(request, response) {
         // gamepadArr.sort();
         // post_data = JSON.stringify(gamepadArr.length + "");
         // post_data = JSON.stringify("connected");
-        post_data = "\"connected\"";
-        response.send(post_data);
-        io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        if (body.length != 0) {
+            post_data = "\"connected\"";
+            response.send(post_data);
+            io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        }
     });
 });
 
@@ -604,6 +604,25 @@ io.on("connection", function(socket) {
         io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     //Nhung cau lenh trong ham nay dc su dung trong ham POST
+    socket.on('ws-test', function(data) {
+        console.log(data);
+        io.sockets.emit("reply-ws-test", { reply: data });
+    });
+    socket.on('hit', function(data) {
+        console.log(data);
+        if (data.hit) {
+            var index = 0;
+            for (index = 0; index < checkID.length; index++) {
+                if (checkID[index] == data.COKI)
+                    break;
+            }
+            console.log("Gamepad vibrator: " + gamepadArr[index])
+                // post_data = JSON.stringify(gamepadArr[index]);
+                // response.send(post_data);
+                // io.sockets.emit("hit-or-not", { data: gamepadArr[index] });
+        }
+
+    });
     socket.on('SendTextToSerVer', function(data) {
         console.log(data);
         FYEUCAUCHECKSERVER();
