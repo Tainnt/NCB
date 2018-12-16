@@ -595,6 +595,16 @@ io.on("connection", function(socket) {
     YEUCAUUSER();
     //socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
     FYEUCAUCHECKSERVER();
+    socket.on('BoardInfo', function(data) {
+        console.log(data);
+        if (!gamepadArr.includes(data))
+            gamepadArr.push(data);
+        console.log("gamepadArr: " + gamepadArr);
+        // gamepadArr.sort();
+        // post_data = JSON.stringify(gamepadArr.length + "");
+        // post_data = JSON.stringify("connected");
+        io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+    });
     socket.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     socket.on('gamepadSelected', function(data) {
         userGamepad[checkID.indexOf(data.COKI)] = gamepadArr[data.i];
