@@ -616,8 +616,8 @@ io.on("connection", function(socket) {
     //Nhung cau lenh trong ham nay dc su dung trong ham POST
     socket.on('GamepadKey', function(data) {
         console.log("GamepadKey: " + data);
-        var reqKey = data[1];
-        var reqID = data.slice(3, 8);
+        var reqKey = data[0];
+        var reqID = data.slice(2, 8);
 
         console.log("id: " + reqID);
         console.log("reqKey: " + reqKey);
