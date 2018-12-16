@@ -604,9 +604,8 @@ io.on("connection", function(socket) {
         io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     //Nhung cau lenh trong ham nay dc su dung trong ham POST
-    socket.on('ws-test', function(data) {
-        console.log(data);
-        io.sockets.emit("reply-ws-test", { reply: data });
+    socket.on('GampadKey', function(data) {
+        console.log("GamepadKey: " + data);
     });
     socket.on('hit', function(data) {
         console.log(data);
