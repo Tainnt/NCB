@@ -1,10 +1,10 @@
 var mysql = require('mysql');
 
 var pool = mysql.createConnection({
-    host: 'db4free.net',
-    user: 'tainnt',
-    password: '12345678',
-    database: 'battle_ship',
+    host: 'sql12.freemysqlhosting.net',
+    user: 'sql12270334',
+    password: 'fbws2QvVig',
+    database: 'sql12270334',
 });
 
 module.exports = {
