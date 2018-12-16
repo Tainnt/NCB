@@ -14,7 +14,6 @@ let sess;
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
-// app.use(bodyParser.json());
 app.use(express.static('public'));
 
 app.use(cookieParser());
@@ -31,28 +30,22 @@ server.listen(3000, function() {
 
 app.get('/', function(request, response) {
     sess = request.session;
-    // sess.username ? response.redirect('/room') : response.sendFile(__dirname + '/views/index.html');
     var temp = 0;
     for (var i = SESSIONID.length - 1; i >= 0; i--) {
         if (SESSIONID[i] == request.sessionID) {
             if (STRUCT[i].KiemTraTrangThai() == 0) {
                 response.sendFile(__dirname + '/views/index.html');
-                // response.redirect('/');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 1) {
-                // response.sendFile(__dirname + '/views/room.html');
                 response.redirect('/room')
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 2) {
-                // response.sendFile(__dirname + '/views/createMap.html');
                 response.redirect('/create');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 3) {
-                // response.sendFile(__dirname + '/views/fight.html');
                 response.redirect('/fight');
                 temp = 1;
             }
-            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
         }
     }
     if (temp == 0) {
@@ -62,16 +55,13 @@ app.get('/', function(request, response) {
 
 app.get('/room', function(request, response) {
     sess = request.session;
-    // sess.username ? response.sendFile(__dirname + '/views/room.html') : response.redirect('/');
     if (sess.username) {
         //v7+
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == request.sessionID) {
-                //console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
                 if (STRUCT[i].KiemTraTrangThai() == 0) {
                     STRUCT[i].setTrangThai("room");
                 }
-                //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
             }
         }
         //v7-
@@ -81,22 +71,17 @@ app.get('/room', function(request, response) {
         if (SESSIONID[i] == request.sessionID) {
             if (STRUCT[i].KiemTraTrangThai() == 0) {
                 response.sendFile(__dirname + '/views/index.html');
-                // response.redirect('/');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 1) {
                 response.sendFile(__dirname + '/views/room.html');
-                // response.redirect('/room')
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 2) {
-                // response.sendFile(__dirname + '/views/createMap.html');
                 response.redirect('/create');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 3) {
-                // response.sendFile(__dirname + '/views/fight.html');
                 response.redirect('/fight');
                 temp = 1;
             }
-            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
         }
     }
     if (temp == 0) {
@@ -106,16 +91,13 @@ app.get('/room', function(request, response) {
 
 app.get('/create', function(request, response) {
     sess = request.session;
-    // sess.username ? response.sendFile(__dirname + '/views/createMap.html') : response.redirect('/');
     if (sess.username) {
         //v7+
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == request.sessionID) {
-                //console.log("Trang thai truoc: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
                 if (STRUCT[i].KiemTraTrangThai() == 1) {
                     STRUCT[i].setTrangThai("create");
                 }
-                //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
             }
         }
         //v7-
@@ -126,22 +108,16 @@ app.get('/create', function(request, response) {
         if (SESSIONID[i] == request.sessionID) {
             if (STRUCT[i].KiemTraTrangThai() == 0) {
                 response.sendFile(__dirname + '/views/index.html');
-                // response.redirect('/');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 1) {
-                // response.sendFile(__dirname + '/views/room.html');
                 response.redirect('/room')
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 2) {
-                response.sendFile(__dirname + '/views/createMap.html');
-                // response.redirect('/create');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 3) {
-                // response.sendFile(__dirname + '/views/fight.html');
                 response.redirect('/fight');
                 temp = 1;
             }
-            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
         }
     }
     if (temp == 0) {
@@ -151,16 +127,13 @@ app.get('/create', function(request, response) {
 
 app.get('/fight', function(request, response) {
     sess = request.session;
-    // sess.username ? response.sendFile(__dirname + '/views/fight.html') : response.redirect('/');
     if (sess.username) {
         //v7+
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == request.sessionID) {
-                //console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai truoc");
                 if (STRUCT[i].KiemTraTrangThai() == 2) {
                     STRUCT[i].setTrangThai("fight");
                 }
-                //console.log(STRUCT[i].KiemTraTrangThai() + "Trang thai sau");
             }
         }
         //v7-
@@ -170,28 +143,22 @@ app.get('/fight', function(request, response) {
         if (SESSIONID[i] == request.sessionID) {
             if (STRUCT[i].KiemTraTrangThai() == 0) {
                 response.sendFile(__dirname + '/views/index.html');
-                // response.redirect('/');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 1) {
-                // response.sendFile(__dirname + '/views/room.html');
                 response.redirect('/room')
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 2) {
-                // response.sendFile(__dirname + '/views/create.html');
                 response.redirect('/create');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 3) {
                 response.sendFile(__dirname + '/views/fight.html');
-                // response.redirect('/fight');
                 temp = 1;
             }
-            //console.log("Trang thai sau: " + STRUCT[i].KiemTraTrangThai() + " " + STRUCT[i].username);
         }
     }
     if (temp == 0) {
         response.sendFile(__dirname + '/views/index.html');
     }
-    //FYEUCAUCHECKSERVER();
 });
 
 app.get('/register', function(request, response) {
@@ -204,10 +171,7 @@ app.get('/gamepad', function(request, response) {
 
 app.get('/logout', function(request, response) {
     checkID.splice(checkUser.indexOf(request.session.username), 1);
-    // gamepadArr.push(userGamepad[checkUser.indexOf(request.session.username)] + "");
-    // gamepadArr.sort();
     userGamepad.splice(checkUser.indexOf(request.session.username), 1);
-    // SESSIONUSER.splice(SESSIONUSER.indexOf(request.session.username), 1);
     checkUser.splice(checkUser.indexOf(request.session.username), 1);
     for (var i = SESSIONID.length - 1; i >= 0; i--) {
         if (SESSIONID[i] == request.sessionID) {
@@ -219,14 +183,8 @@ app.get('/logout', function(request, response) {
     console.log("userGamepad: " + userGamepad);
     console.log("gamepadArr: " + gamepadArr);
     io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
-    // request.session.destroy((err) => {
-    //     err ? console.log(err) : response.redirect('/')
-    // });
-    response.redirect('/');
-});
 
-app.get('/test', function(request, response) {
-    io.sockets.emit('hit', { hit: true, COKI: request.sessionID });
+    response.redirect('/');
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -269,9 +227,6 @@ app.post('/login', urlencodedParser, function(req, res) {
         } else {
             res.send({ data: 0 });
         }
-        //console.log(req.session.username);
-        // console.log("SESSIONID: " + SESSIONID);
-        // console.log("SESSIONUSER: " + SESSIONUSER);
     })
 
     sess = req.session;
@@ -294,138 +249,7 @@ app.post('/register', urlencodedParser, function(req, res) {
     })
 });
 
-var data_from_console;
-app.post('/', function(request, response) {
-    const { headers, method, url } = request;
-    let body = [];
-    request.on('error', (err) => {
-        console.error(err);
-    }).on('data', (chunk) => {
-        body.push(chunk);
-    }).on('end', () => {
-        body = Buffer.concat(body).toString();
-        // BEGINNING OF NEW STUFF
 
-        response.on('error', (err) => {
-            console.error(err);
-        });
-
-        response.statusCode = 200;
-        response.setHeader('Content-Type', 'application/json');
-
-        const responseBody = body;
-
-        //post_data = JSON.stringify(responseBody);
-        data_from_console = JSON.stringify(responseBody);
-        if (data_from_console.length != 0) {
-            console.log("data_from_console: " + data_from_console);
-            var reqKey = data_from_console[1];
-            var reqID = data_from_console.slice(3, 8);
-
-            console.log("id: " + reqID);
-            console.log("reqKey: " + reqKey);
-            //===============UNCOMMENT UNDER FUNCTIONS DE TEST BANG BOARD THAT=================//
-            FYEUCAUCHECKSERVER();
-            var index = userGamepad.indexOf(reqID);
-            var ID = SESSIONID.indexOf(checkID[index]) + 1;
-            console.log("id nguoi choi: " + ID);
-            GAME(reqKey, ID);
-        }
-    });
-});
-
-var gamepadArr = [];
-app.post('/board-info', function(request, response) {
-    const { headers, method, url } = request;
-    let body = [];
-    request.on('error', (err) => {
-        console.error(err);
-    }).on('data', (chunk) => {
-        body.push(chunk);
-    }).on('end', () => {
-        body = Buffer.concat(body).toString();
-        response.on('error', (err) => {
-            console.error(err);
-        });
-        response.statusCode = 200;
-        response.setHeader('Content-Type', 'application/json');
-
-        // if (body == 'b_i') {
-        //     gamepadArr.push(gamepadArr.length + 1);
-        //     post_data = JSON.stringify(gamepadArr.length + "");
-        //     response.send(post_data);
-        //     // io.sockets.emit("gamepadArr", { arr: gamepadArr });
-        //     io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: SESSIONID, id: userGamepad });
-        // } else {
-        //     post_data = JSON.stringify("error");
-        //     response.send(post_data);
-        // }
-        console.log(body);
-        if (!gamepadArr.includes(body))
-            gamepadArr.push(body);
-        // gamepadArr.sort();
-        // post_data = JSON.stringify(gamepadArr.length + "");
-        // post_data = JSON.stringify("connected");
-        if (body.length != 0) {
-            post_data = "\"connected\"";
-            response.send(post_data);
-            io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
-        }
-    });
-});
-
-var vibrator = false;
-app.post('/hit-or-not', function(request, response) {
-    const { headers, method, url } = request;
-    let body = [];
-    request.on('error', (err) => {
-        console.error(err);
-    }).on('data', (chunk) => {
-        body.push(chunk);
-    }).on('end', () => {
-        body = Buffer.concat(body).toString();
-
-        response.on('error', (err) => {
-            console.error(err);
-        });
-
-        response.statusCode = 200;
-        response.setHeader('Content-Type', 'application/json');
-        // console.log(body);
-        if (gamepadArr.includes(body)) {
-            var flag = false;
-            io.sockets.on('hit', function(data) {
-                if (data.hit) {
-                    var index = 0;
-                    for (index = 0; index < checkID.length; index++) {
-                        if (checkID[index] == data.COKI)
-                            break;
-                    }
-                    console.log("Gamepad vibrator: " + gamepadArr[index])
-                    post_data = JSON.stringify(gamepadArr[index]);
-                    response.send(post_data);
-                    flag = true;
-                }
-            });
-            if (!flag) {
-                post_data = JSON.stringify("");
-                response.send(post_data);
-            }
-        } else {
-            post_data = JSON.stringify("Can't find gamepad");
-            response.send(post_data);
-        }
-        // if (body == 'H?') {
-        //     if (vibrator) {
-        //         post_data = JSON.stringify("H:O");
-        //         response.send(post_data);
-        //     }
-        // } else {
-        //     post_data = JSON.stringify("error");
-        //     response.send(post_data);
-        // }
-    });
-});
 
 ////////////////////////////////////////////////////////
 ///////PHẦN XỬ LÝ//////////////////////////////////////
@@ -554,6 +378,7 @@ function TPHONG() {
 SESSIONID = [];
 SESSIONUSER = [];
 userGamepad = [];
+var gamepadArr = [];
 var checkUser = [];
 var checkID = [];
 var useronline = 0;
@@ -591,18 +416,13 @@ function JOINROOM(TEXTDATA, controsophonghientai) {
 }
 
 io.on("connection", function(socket) {
-    //socket.emit("NumOfPlayerInRoom", { PHONG: phong });
     YEUCAUUSER();
-    //socket.emit("ShipPos", { P1: p1Ship, P2: p2Ship });
     FYEUCAUCHECKSERVER();
     socket.on('BoardInfo', function(data) {
         console.log(data);
         if (!gamepadArr.includes(data))
             gamepadArr.push(data);
         console.log("gamepadArr: " + gamepadArr);
-        // gamepadArr.sort();
-        // post_data = JSON.stringify(gamepadArr.length + "");
-        // post_data = JSON.stringify("connected");
         io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     socket.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
@@ -610,7 +430,6 @@ io.on("connection", function(socket) {
         userGamepad[checkID.indexOf(data.COKI)] = gamepadArr[data.i];
         console.log("checkUser: " + checkUser);
         console.log("userGamepad: " + userGamepad);
-        // gamepadArr.splice(data.i, 1);
         io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     //Nhung cau lenh trong ham nay dc su dung trong ham POST
@@ -618,10 +437,8 @@ io.on("connection", function(socket) {
         console.log("GamepadKey: " + data);
         var reqKey = data[0];
         var reqID = data.slice(2, 8);
-
         console.log("id: " + reqID);
         console.log("reqKey: " + reqKey);
-
         FYEUCAUCHECKSERVER();
         var index = userGamepad.indexOf(reqID);
         var ID = SESSIONID.indexOf(checkID[index]) + 1;
@@ -637,9 +454,6 @@ io.on("connection", function(socket) {
             }
             console.log("Gamepad vibrator: " + gamepadArr[index]);
             io.sockets.emit("vibrator", gamepadArr[index]);
-            // post_data = JSON.stringify(gamepadArr[index]);
-            // response.send(post_data);
-            // io.sockets.emit("hit-or-not", { data: gamepadArr[index] });
         }
 
     });
@@ -1218,92 +1032,6 @@ io.on("connection", function(socket) {
         }
     });
 });
-
-
-function XuLyDuLieuGuiLen(controcontrol, controplayer1) {
-    if (controcontrol == "L") {
-        if (Math.abs(controplayer1 % 10) != 1) {
-            controplayer1 -= 1;
-        }
-        key = 'L';
-    } else if (controcontrol == "R") {
-        if (Math.abs(controplayer1 % 10) != 0) {
-            controplayer1 += 1;
-        }
-        key = 'R';
-    } else if (controcontrol == "U") {
-        if (Math.abs(Math.floor((controplayer1) / 10)) != 0) {
-            controplayer1 -= 10;
-        }
-        key = 'U';
-    } else if (controcontrol == "D") {
-        if (Math.abs(Math.floor((controplayer1) / 10)) != 9) {
-            controplayer1 += 10;
-        }
-        key = 'D';
-    } else if (controcontrol == "O") {
-        shot = 1;
-        key = 'O';
-    } else if (controcontrol == "C") {
-        shot = -1;
-        key = 'C';
-    } else {
-        error = 1;
-    }
-}
-
-
-function XuLyDuLieuGuiLenP2(controcontrol) {
-    if (controcontrol == "L\"=L\"") {
-        if (Math.abs(controplayer2 % 10) != 1) {
-            controplayer2 -= 1;
-        }
-        key = 'L';
-    } else if (controcontrol == "R") {
-        if (Math.abs(controplayer2 % 10) != 0) {
-            controplayer2 += 1;
-        }
-        key = 'R';
-    } else if (controcontrol == "U") {
-        if (Math.abs(Math.floor((controplayer2) / 10)) != 0) {
-            controplayer2 -= 10;
-        }
-        key = 'U';
-    } else if (controcontrol == "D") {
-        if (Math.abs(Math.floor((controplayer2) / 10)) != 9) {
-            controplayer2 += 10;
-        }
-        key = 'D';
-    } else if (controcontrol == "O") {
-        shot = 1;
-        key = 'O';
-    } else if (controcontrol == "C") {
-        shot = 1;
-        key = 'C';
-    } else {
-        error = 1;
-    }
-}
-
-function HienThiKetQuaLenAllClientP1() {
-    if (p2Ship[controplayer1 - 1] != 'N') {
-        io.sockets.emit("NewData", { CONTRO: controplayer1, SHOT: shot, ERROR: error, KEY: key, SHIP: p1Ship });
-    } else {
-        io.sockets.emit("NewData", { CONTRO: -controplayer1, SHOT: shot, ERROR: error, KEY: key, SHIP: p1Ship });
-    }
-    shot = 0;
-    error = 0;
-}
-
-function HienThiKetQuaLenAllClientP2() {
-    if (p1Ship[controplayer2 - 1] != 'N') {
-        io.sockets.emit("NewData2", { CONTRO: controplayer2, SHOT: shot, ERROR: error } /*{hinh:data, link:l}*/ );
-    } else {
-        io.sockets.emit("NewData2", { CONTRO: -controplayer2, SHOT: shot, ERROR: error } /*{hinh:data, link:l}*/ );
-    }
-    shot = 0;
-    error = 0;
-}
 //++++++++++++++++Function GAME++++++++++++++++++++++++++++++++++++++++++++++++++++
 //---Chuc nang: Xu ly toan bo du lieu tu luc tao phong den luc ket thuc game-----//
 //---Tham so: 1. DuLieuGuiLen (U,D,L,R,O,C) 2.IDNguoiChoi (1,2,3,...)//
@@ -1437,17 +1165,9 @@ function GAME(DuLieuGuiLen, IDNguoiChoi) {
                     STRUCT[IDNguoiChoi - 1].setConTroPlayerFight(controplayer1);
                 }
             } else if (DuLieuGuiLen == 'O') {
-                //shot = 1;
                 var temp = STRUCT[IDNguoiChoi - 1].shotfight;
                 temp += 1;
                 STRUCT[IDNguoiChoi - 1].setShotFight(temp);
-                // } else if (DuLieuGuiLen == 'C') {
-                //     //shot = 1;
-                //     var temp = STRUCT[IDNguoiChoi-1].shotcreate;
-                //         temp+=1;
-                //     STRUCT[IDNguoiChoi-1].setShotCreat(temp);
-                // } else {
-                //error = 1;
             }
             break;
         case 4:
@@ -1464,29 +1184,4 @@ function FYEUCAUCHECKSERVER() {
     io.sockets.emit('YEUCAUCHECKSERVER', {
         CHECK: 1,
     });
-}
-
-function XuLyConTroFight(controcontrol) {
-
-    if (controcontrol == "L" || controcontrol == "R" || controcontrol == "U" || controcontrol == "D" || controcontrol == "O" || controcontrol == "C") {
-        if (controcontrol == "L") {
-            if (controplayer1 == 1) {
-                controplayer1 = 100;
-            } else { controplayer1 -= 1; }
-        } else if (controcontrol == "R") {
-            if (controplayer1 == 100) {
-                controplayer1 = 1;
-            } else { controplayer1 += 1; }
-        } else if (controcontrol == "U") {
-            if (Math.floor((controplayer1) / 10) == 0 || controplayer1 == 10) {
-                controplayer1 += 90;
-            } else { controplayer1 -= 10; }
-        } else if (controcontrol == "D") {
-            if (Math.floor((controplayer1) / 10) == 9 || controplayer1 == 100) {
-                controplayer1 -= 90;
-            } else { controplayer1 += 10; }
-        } else if (controcontrol == "O") {
-            shot = 1;
-        }
-    } else { error = 1; }
 }
