@@ -625,10 +625,11 @@ io.on("connection", function(socket) {
                 if (checkID[index] == data.COKI)
                     break;
             }
-            console.log("Gamepad vibrator: " + gamepadArr[index])
-                // post_data = JSON.stringify(gamepadArr[index]);
-                // response.send(post_data);
-                // io.sockets.emit("hit-or-not", { data: gamepadArr[index] });
+            console.log("Gamepad vibrator: " + gamepadArr[index]);
+            io.sockets.emit("vibrator", gamepadArr[index]);
+            // post_data = JSON.stringify(gamepadArr[index]);
+            // response.send(post_data);
+            // io.sockets.emit("hit-or-not", { data: gamepadArr[index] });
         }
 
     });
