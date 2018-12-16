@@ -605,7 +605,7 @@ io.on("connection", function(socket) {
     });
     //Nhung cau lenh trong ham nay dc su dung trong ham POST
     socket.on('GamepadKey', function(data) {
-        console.log("GamepadKey: " + data);
+        console.log("GamepadKey: " + data.key);
     });
     socket.on('hit', function(data) {
         console.log(data);
