@@ -38,11 +38,6 @@ var d2 = document.getElementById("d2");
 var d3 = document.getElementById("d3");
 var d4 = document.getElementById("d4");
 
-var index = 0;
-var orientation = false;
-var tempPointer = 0;
-var tempKey = 'X';
-
 function InitPage() {
     var count = 0;
     var num = 4;
@@ -267,7 +262,7 @@ function getCookie(cname) {
 
 $('#btn').on('click', function() {
     var xxx = getCookie("Bantausession");
-    socket.emit("sendShipPos", { Arr: shipPosArr, COOKIE: xxx, });
+    socket.emit("SendShipPos", { Arr: shipPosArr, COOKIE: xxx, });
     socket.emit('REQYEUCAUCHECKSERVER', {
         COKI: x,
     });
@@ -288,16 +283,22 @@ socket.on("YEUCAUCHECKSERVER", function(data) {
     });
 });
 
+var index = 0;
+var orientation = false;
+console.log("orientation: " + orientation);
+var tempPointer = 0;
+var tempKey = 'X';
 
 socket.on("RESYEUCAUCHECKSERVER", function(data) {
     enemyla = data.emENEMY;
     var element = document.getElementById('id_cua_doi_thu');
     element.innerHTML = ' ' + enemyla;
     console.log(data);
-    if (data.emSHOTLAYERCREATE > SHOTLAYERCREATE) {
-        shotx = 1;
-    } else { shotx = 0; }
-    SHOTLAYERCREATE = data.emSHOTLAYERCREATE;
+    // if (data.emSHOTLAYERCREATE > SHOTLAYERCREATE) {
+    //     shotx = 1;
+    // } else { shotx = 0; }
+    // SHOTLAYERCREATE = data.emSHOTLAYERCREATE;
+    shotx = data.emSHOTLAYERCREATE;
     console.log("data.DATA: " + data.emPHONG[data.emVITRICONTROPHONG - 1]);
     console.log("data.SHOT: " + shotx);
     console.log("data.KEY: " + data.emKEYPLAYERCREATE);
@@ -352,7 +353,7 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             } else {
                 muctieuctx.drawImage(error, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
             }
-            socket.emit('pointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
+            socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
 
             tempPointer = 0;
             tempKey = 'X';
@@ -415,5 +416,6 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
         label[4 - len].innerHTML = Number(label[4 - len].innerHTML) + 1;
         LoadShip(0, 99);
         muctieuctx.drawImage(pointer, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
+        $("#btn").prop("disabled", true);
     }
 });

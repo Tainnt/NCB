@@ -53,7 +53,7 @@ $('#logout').on('click', function() {
     window.location = '/logout';
 });
 
-socketroom.on("gamepadArr", function(data) {
+socketroom.on("GamepadArr", function(data) {
     // console.log(data);
     var index = 0;
     for (index = 0; index < data.ss.length; index++) {
@@ -67,7 +67,7 @@ socketroom.on("gamepadArr", function(data) {
                 $("#listGamepad").append("<button class=\"btn\" id=\"gp" + (index + 1) + "\">Gamepad " + data.arr[index] + "</button>");
                 $("#gp" + (index + 1)).on('click', function() {
                     alert('Bạn đã chọn Gamepad ' + data.arr[index]);
-                    socketroom.emit('gamepadSelected', { i: index, COKI: getCookie("Bantausession") });
+                    socketroom.emit('GamepadSelected', { i: index, COKI: getCookie("Bantausession") });
                     $("#listGamepad").hide();
                     $("#selectGamepad").hide();
                 });

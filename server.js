@@ -183,7 +183,7 @@ app.get('/logout', function(request, response) {
     console.log("checkID: " + checkID);
     console.log("userGamepad: " + userGamepad);
     console.log("gamepadArr: " + gamepadArr);
-    io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+    io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
 
     response.redirect('/');
 });
@@ -424,16 +424,15 @@ io.on("connection", function(socket) {
         if (!gamepadArr.includes(data))
             gamepadArr.push(data);
         console.log("gamepadArr: " + gamepadArr);
-        io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
-    socket.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
-    socket.on('gamepadSelected', function(data) {
+    socket.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+    socket.on('GamepadSelected', function(data) {
         userGamepad[checkID.indexOf(data.COKI)] = gamepadArr[data.i];
         console.log("checkUser: " + checkUser);
         console.log("userGamepad: " + userGamepad);
-        io.sockets.emit("gamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
-    //Nhung cau lenh trong ham nay dc su dung trong ham POST
     socket.on('GamepadKey', function(data) {
         console.log("GamepadKey: " + data);
         var reqKey = data[0];
@@ -445,7 +444,7 @@ io.on("connection", function(socket) {
         var ID = SESSIONID.indexOf(checkID[index]) + 1;
         GAME(reqKey, ID);
     });
-    socket.on('hit', function(data) {
+    socket.on('Hit', function(data) {
         console.log(data);
         if (data.hit) {
             var index = 0;
@@ -458,18 +457,18 @@ io.on("connection", function(socket) {
         }
 
     });
+    socket.on('UpdateShotOrNot', function(data) {
+
+    });
     socket.on('SendTextToSerVer', function(data) {
         console.log(data);
         FYEUCAUCHECKSERVER();
         GAME(data.DATA, data.P);
     });
-    socket.on('pointerChange', function(data) {
+    socket.on('PointerChange', function(data) {
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == data.COKI) {
-                console.log("User: " + SESSIONUSER[i]);
-                console.log("pointer: " + STRUCT[i].controplayercreate);
                 STRUCT[i].controplayercreate = data.pt + 1;
-                console.log("edit pointer: " + STRUCT[i].controplayercreate);
             }
         }
     });
@@ -991,7 +990,7 @@ io.on("connection", function(socket) {
         }
     });
     //v7-
-    socket.on('sendShipPos', function(data) {
+    socket.on('SendShipPos', function(data) {
         //console.log(data);
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == data.COOKIE) {
@@ -1085,6 +1084,7 @@ function GAME(DuLieuGuiLen, IDNguoiChoi) {
                     STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
                 }
                 //key = 'L';
+                STRUCT[IDNguoiChoi - 1].setShotCreat(0);
                 STRUCT[IDNguoiChoi - 1].setKeyCreat('L');
             } else if (DuLieuGuiLen == 'R') {
                 if (Math.abs(controplayer1 % 10) != 0) {
@@ -1092,6 +1092,7 @@ function GAME(DuLieuGuiLen, IDNguoiChoi) {
                     STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
                 }
                 //key = 'R';
+                STRUCT[IDNguoiChoi - 1].setShotCreat(0);
                 STRUCT[IDNguoiChoi - 1].setKeyCreat('R');
             } else if (DuLieuGuiLen == 'U') {
                 if (Math.abs(Math.floor((controplayer1) / 10)) != 0 && controplayer1 != 10) {
@@ -1099,6 +1100,7 @@ function GAME(DuLieuGuiLen, IDNguoiChoi) {
                     STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
                 }
                 //key = 'U';
+                STRUCT[IDNguoiChoi - 1].setShotCreat(0);
                 STRUCT[IDNguoiChoi - 1].setKeyCreat('U');
             } else if (DuLieuGuiLen == 'D') {
                 if (Math.abs(Math.floor((controplayer1) / 10)) != 9 && controplayer1 != 100) {
@@ -1109,18 +1111,21 @@ function GAME(DuLieuGuiLen, IDNguoiChoi) {
                     STRUCT[IDNguoiChoi - 1].setConTroPlayerCreat(controplayer1);
                 }
                 //key = 'D';
+                STRUCT[IDNguoiChoi - 1].setShotCreat(0);
                 STRUCT[IDNguoiChoi - 1].setKeyCreat('D');
             } else if (DuLieuGuiLen == 'O') {
                 //shot = 1;
                 var temp = STRUCT[IDNguoiChoi - 1].shotcreate;
-                temp += 1;
+                // temp += 1;
+                temp = 1;
                 STRUCT[IDNguoiChoi - 1].setShotCreat(temp);
                 //key = 'O';
                 STRUCT[IDNguoiChoi - 1].setKeyCreat('O');
             } else if (DuLieuGuiLen == 'C') {
                 //shot = 1;
                 var temp = STRUCT[IDNguoiChoi - 1].shotcreate;
-                temp += 1;
+                // temp -= 1;
+                temp = -1;
                 STRUCT[IDNguoiChoi - 1].setShotCreat(temp);
                 //key = 'C';
                 STRUCT[IDNguoiChoi - 1].setKeyCreat('C');

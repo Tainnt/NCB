@@ -228,39 +228,6 @@ function LoadShip(start, end, arr) {
 var socket = io.connect("http://doanncb.ddns.net:3000");
 
 //CAP NHAT TRAN CHIEN
-socket.on('NewData', function(data) {
-    console.log(data);
-    var requestData = Math.abs(data.CONTRO);
-    if (data.SHOT) {
-        if (shotorno[(Math.abs(requestData - 1))] == 0) {
-            dohoashot(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], data.CONTRO);
-            shotorno[(Math.abs(requestData - 1))] += 1;
-        } else {
-            // alert("Chỗ này bạn bắn rồi!");
-            dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
-        }
-    } else {
-        dohoamuctieu(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
-    }
-});
-
-socket.on('NewData2', function(data) {
-    console.log(data);
-    //alert(data.CONTRO);
-    var requestData = Math.abs(data.CONTRO);
-    if (data.SHOT) {
-        if (shotorno[(Math.abs(requestData - 1))] == 0) {
-            dohoashot2(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], data.CONTRO);
-            shotorno[(Math.abs(requestData - 1))] += 1;
-        } else {
-            // alert("Chỗ này bạn bắn rồi!");
-            dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], 1)
-        }
-    } else {
-        dohoamuctieu(toadoxplayer1[(Math.abs(requestData - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData - 1)) / 10)], shotorno[Math.abs(requestData - 1)])
-    }
-});
-
 
 var x = getCookie("Bantausession");
 
@@ -317,7 +284,6 @@ if (chay1lan == 1) {
 socket.on("RESYEUCAUCHECKSERVER", function(data) {
     //Che do 1 PC mode
     LoadShip(0, 99, P1SHIP);
-    //LoadShip(0, 99, P1SHIP);
     if (data.emSHOTLAYERFIGHT > SHOTLAYERFIGHT) {
         shotf = 1;
     } else { shotf = 0; }
@@ -362,13 +328,14 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             if (shotorno2[(Math.abs(requestData - 1))] == 0) {
                 dohoashot(toadoxplayer2[(Math.abs(requestData - 1)) % 10], toadoyplayer2[Math.floor((Math.abs(requestData - 1)) / 10)], CONTRO1);
                 shotorno2[(Math.abs(requestData - 1))] += 1;
+                // socket.emit('UpdateShotOrNot', { arr: shotorno2, COKI: x });
                 checkDestroyShip(requestData - 1, P2SHIP, shotorno2, 1);
                 t = timer;
                 // turn = -turn;
                 if (P2SHIP[Math.abs(requestData - 1)] == 'N') {
                     turn = -turn;
                 } else {
-                    socket.emit('hit', { hit: true, COKI: x });
+                    socket.emit('Hit', { hit: true, COKI: x });
                 }
 
                 if (CONTRO1 > 0) {
@@ -390,12 +357,13 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             if (shotorno[(Math.abs(requestData2 - 1))] == 0) {
                 dohoashot2(toadoxplayer1[(Math.abs(requestData2 - 1)) % 10], toadoyplayer1[Math.floor((Math.abs(requestData2 - 1)) / 10)], CONTRO2);
                 shotorno[(Math.abs(requestData2 - 1))] += 1;
-                t = timer;
+                // socket.emit('UpdateShotOrNot', { arr: shotorno2, COKI: x });
                 checkDestroyShip(requestData2 - 1, P1SHIP, shotorno, 2);
+                t = timer;
                 if (P1SHIP[Math.abs(requestData2 - 1)] == 'N') {
                     turn = -turn;
                 } else {
-                    socket.emit('hit', { hit: true, COKI: x });
+                    socket.emit('Hit', { hit: true, COKI: x });
                 }
                 if (CONTRO2 > 0) {
                     P2WIN += 1;
