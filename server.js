@@ -420,7 +420,7 @@ function JOINROOM(TEXTDATA, controsophonghientai) {
 io.on("connection", function(socket) {
     // console.log("Co nguoi ket noi server, socket: " + socket.id);
     socket.on('disconnect', function() {
-        // console.log("SocketID disconnect: " + socket.id);
+        console.log("SocketID disconnect: " + socket.id);
         gamepadArr.slice(gamepadID.indexOf(socket.id), 1);
         gamepadID.slice(gamepadID.indexOf(socket.id), 1);
         console.log("gamepadArr: " + gamepadArr);
