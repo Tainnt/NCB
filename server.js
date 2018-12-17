@@ -113,6 +113,7 @@ app.get('/create', function(request, response) {
                 response.redirect('/room')
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 2) {
+                response.sendFile(__dirname + '/views/createMap.html');
                 temp = 1;
             } else if (STRUCT[i].KiemTraTrangThai() == 3) {
                 response.redirect('/fight');
