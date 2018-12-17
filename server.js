@@ -423,8 +423,8 @@ io.on("connection", function(socket) {
         console.log("SocketID disconnect: " + socket.id);
         gamepadArr.slice(gamepadID.indexOf(socket.id), 1);
         gamepadID.slice(gamepadID.indexOf(socket.id), 1);
-        console.log("gamepadArr: " + gamepadArr);
-        console.log("gamepadID: " + gamepadID);
+        console.log("DIS gamepadArr: " + gamepadArr);
+        console.log("DIS gamepadID: " + gamepadID);
         io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     YEUCAUUSER();
