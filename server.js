@@ -419,23 +419,23 @@ function JOINROOM(TEXTDATA, controsophonghientai) {
 
 io.on("connection", function(socket) {
     socket.on('disconnect', function() {
-        // if (gamepadID.includes(socket.id)) {
-        //     gamepadArr.splice(gamepadID.indexOf(socket.id), 1);
-        //     gamepadID.splice(gamepadID.indexOf(socket.id), 1);
-        //     console.log("DIS gamepadArr: " + gamepadArr);
-        //     console.log("DIS gamepadID: " + gamepadID);
-        //     io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
-        // }
+        if (gamepadID.includes(socket.id)) {
+            gamepadArr.splice(gamepadID.indexOf(socket.id), 1);
+            gamepadID.splice(gamepadID.indexOf(socket.id), 1);
+            console.log("DIS gamepadArr: " + gamepadArr);
+            console.log("DIS gamepadID: " + gamepadID);
+            io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        }
     });
     YEUCAUUSER();
     FYEUCAUCHECKSERVER();
     socket.on('BoardInfo', function(data) {
         console.log(data);
-        if (!gamepadArr.includes(data)) {
-            gamepadArr.push(data);
-        }
-        // gamepadArr.push(data);
-        // gamepadID.push(socket.id);
+        // if (!gamepadArr.includes(data)) {
+        //     gamepadArr.push(data);
+        // }
+        gamepadArr.push(data);
+        gamepadID.push(socket.id);
         console.log("gamepadArr: " + gamepadArr);
         console.log("gamepadID: " + gamepadID);
         io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
