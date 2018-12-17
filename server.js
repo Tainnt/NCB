@@ -376,10 +376,11 @@ function TPHONG() {
 }
 //v12-
 //V7-
-SESSIONID = [];
-SESSIONUSER = [];
-userGamepad = [];
+var SESSIONID = [];
+var SESSIONUSER = [];
+var userGamepad = [];
 var gamepadArr = [];
+var gamepadID = [];
 var checkUser = [];
 var checkID = [];
 var useronline = 0;
@@ -417,13 +418,26 @@ function JOINROOM(TEXTDATA, controsophonghientai) {
 }
 
 io.on("connection", function(socket) {
+    // console.log("Co nguoi ket noi server, socket: " + socket.id);
+    socket.on('disconnect', function() {
+        // console.log("SocketID disconnect: " + socket.id);
+        gamepadArr.slice(gamepadID.indexOf(socket.id), 1);
+        gamepadID.slice(gamepadID.indexOf(socket.id), 1);
+        console.log("gamepadArr: " + gamepadArr);
+        console.log("gamepadID: " + gamepadID);
+        io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+    });
     YEUCAUUSER();
     FYEUCAUCHECKSERVER();
     socket.on('BoardInfo', function(data) {
         console.log(data);
-        if (!gamepadArr.includes(data))
-            gamepadArr.push(data);
+        // if (!gamepadArr.includes(data)) {
+        //     gamepadArr.push(data);
+        // }
+        gamepadArr.push(data);
+        gamepadID.push(socket.id);
         console.log("gamepadArr: " + gamepadArr);
+        console.log("gamepadID: " + gamepadID);
         io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
     });
     socket.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
