@@ -442,7 +442,9 @@ io.on("connection", function(socket) {
         FYEUCAUCHECKSERVER();
         var index = userGamepad.indexOf(reqID);
         var ID = SESSIONID.indexOf(checkID[index]) + 1;
-        GAME(reqKey, ID);
+        if (index != null) {
+            GAME(reqKey, ID);
+        }
     });
     socket.on('Hit', function(data) {
         console.log(data);
