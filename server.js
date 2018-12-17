@@ -420,13 +420,15 @@ function JOINROOM(TEXTDATA, controsophonghientai) {
 io.on("connection", function(socket) {
     // console.log("Co nguoi ket noi server, socket: " + socket.id);
     socket.on('disconnect', function() {
-        console.log("SocketID disconnect: " + socket.id);
-        console.log("index: " + gamepadID.indexOf(socket.id));
-        gamepadArr.slice(gamepadID.indexOf(socket.id), 1);
-        gamepadID.slice(gamepadID.indexOf(socket.id), 1);
-        console.log("DIS gamepadArr: " + gamepadArr);
-        console.log("DIS gamepadID: " + gamepadID);
-        io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        if (gamepadID.includes(socket.id)) {
+            console.log("SocketID disconnect: " + socket.id);
+            console.log("index: " + gamepadID.indexOf(socket.id));
+            gamepadArr.slice(gamepadID.indexOf(socket.id), 1);
+            gamepadID.slice(gamepadID.indexOf(socket.id), 1);
+            console.log("DIS gamepadArr: " + gamepadArr);
+            console.log("DIS gamepadID: " + gamepadID);
+            io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
+        }
     });
     YEUCAUUSER();
     FYEUCAUCHECKSERVER();
