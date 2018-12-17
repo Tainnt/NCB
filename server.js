@@ -417,7 +417,7 @@ function JOINROOM(TEXTDATA, controsophonghientai) {
     return controsophonghientai;
 }
 
-io.sockets.on('disconnect', function() {
+io.on('disconnect', function() {
     console.log("SocketID disconnect: " + socket.id);
     gamepadArr.slice(gamepadID.indexOf(socket.id), 1);
     gamepadID.slice(gamepadID.indexOf(socket.id), 1);
