@@ -441,11 +441,10 @@ io.on("connection", function(socket) {
         console.log("reqKey: " + reqKey);
         FYEUCAUCHECKSERVER();
         var index = userGamepad.indexOf(reqID);
-        console.log(index);
         var ID = SESSIONID.indexOf(checkID[index]) + 1;
-        // if (index != null) {
-        //     GAME(reqKey, ID);
-        // }
+        if (index != -1) {
+            GAME(reqKey, ID);
+        }
     });
     socket.on('Hit', function(data) {
         console.log(data);
