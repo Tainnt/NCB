@@ -2,7 +2,7 @@
 var table = [10, 70, 130, 190, 250, 310, 370, 430, 490, 550];
 var table = [10, 70, 130, 190, 250, 310, 370, 430, 490, 550];
 
-var shipLengthArr = [4, 3, 2, 1];
+var shipLengthArr = [4, 4];
 var allss = 0;
 var shipNameR = [document.getElementById("r2"), document.getElementById("r3"), document.getElementById("r4")];
 var shipNameD = [document.getElementById("d2"), document.getElementById("d3"), document.getElementById("d4")];
@@ -420,4 +420,29 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
         muctieuctx.drawImage(pointer, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
         $("#btn").prop("disabled", true);
     }
+});
+// Get the button that opens the modal
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+//When the user clicks the button, open the modal 
+
+//When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+//When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+var modal = document.getElementById('createModal');
+// modal.style.display = "block";
+
+$('#huongdancreate').on('click', function() {
+    modal.style.display = "block";
 });

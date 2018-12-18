@@ -11,6 +11,24 @@
 </head>
 
 <body onload="InitPage()">
+    <div id='createModal' class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2 id="winorlose" style="margin-left: 38%; font-size:30px">Hướng Dẫn Chơi</h2>
+            </div>
+            <div class="modal-body">
+                <p id="soluotban" style="font-size: 40px">#Cách sắp tàu:</p>
+                <p id="soluotbantrung" style="font-size: 40px">Dùng các phím điều hướng để chọn vị trí neo tàu. Nhấn OK dùng để neo tàu. Sau khi neo tàu, dùng các phím điều hướng để xếp hướng tàu. Nhấn OK lần nữa để chốt vị trí và hướng của tàu và tiếp tục với chiếc tàu tiếp theo.</p>
+                <p style="font-size: 40px">#Khi muốn xóa tàu đã được sắp, chọn tàu và nhấn CANCEL.</p>
+                <p style="font-size: 40px">#Sau khi hoàn thành sắp xếp tàu, chọn Sẵn sàng để chuẩn bị bắt đầu game.</p>
+                <p style="font-size: 30px">Game chỉ bắt đầu khi 2 người chơi cùng sẵn sàng.</p>
+            </div>
+        </div>
+
+    </div>
     <div style="padding-top: 30px">
         <p style="font-size: 23px; float: left;">Bạn đang đăng nhập với tên:&#160</p>
         <p id="id_cua_toi" style="font-size: 23px ; color: #7c0061; float: left"></p>
@@ -44,11 +62,8 @@ The canvas la the HTML dung de tao hieu ung chuyen dong theo toa do pixel-->
             <button id="btn" type="button" class="btn btn-primary btn-block" disabled>Sẵn sàng</button>
         </div>
     </div>
-    <div style="float: left;; margin-top: 400px; font-size: 30px;">
-        <p>
-            Cách sắp tàu: Dùng các phím điều hướng để chọn vị trí neo tàu. Nhấn OK dùng để neo tàu. Sau khi neo tàu, dùng các phím điều hướng để xếp hướng tàu. Nhấn OK lần nữa để chốt vị trí và hướng của tàu và tiếp tục với chiếc tàu tiếp theo. Khi muốn xóa tàu đã
-            được sắp, chọn tàu và nhấn CANCEL. Sau khi hoàn thành sắp xếp tàu, chọn Sẵn sàng để chuẩn bị bắt đầu game.
-        </p>
+    <div style="margin-top: 25%">
+        <button id='huongdancreate'>Hướng Dẫn Chơi</button>
     </div>
     <!--kHAI BAO HINH ANH DE SU DUNG -->
     <img id="pointer" src="/images/mtco.png" style="display: none;">
