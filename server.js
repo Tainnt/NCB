@@ -1064,6 +1064,7 @@ io.on("connection", function(socket) {
         console.log("deleteId: " + deleteId);
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == deleteId[tempIndex]) {
+                console.log("delete user exit: " + deleteId[tempIndex]);
                 tempIndex++;
                 STRUCT[i].setKeyVaoRoom(0);
                 STRUCT[i].setPlayAgain(0);
