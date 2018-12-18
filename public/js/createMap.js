@@ -379,7 +379,7 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
                 socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
             } else
                 $("#btn").prop("disabled", false);
-            if ($("#btn").val == 'Chờ người chơi khác...')
+            if ($("#btn").html() == 'Chờ người chơi khác...')
                 $("#btn").prop("disabled", true);
             tempPointer = 0;
             tempKey = 'X';
