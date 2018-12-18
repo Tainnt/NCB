@@ -323,38 +323,38 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
                 case 'U':
                     if (CheckPos(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D')) {
                         SaveShip(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D');
-                        flag = true;
+                        // flag = true;
                     } else
-                        flag = false;
-                    break;
+                    // flag = false;
+                        break;
                 case 'D':
                     if (CheckPos(tempPointer, shipLengthArr[index], 'D')) {
                         SaveShip(tempPointer, shipLengthArr[index], 'D');
-                        flag = true;
+                        // flag = true;
                     } else
-                        flag = false;
-                    break;
+                    // flag = false;
+                        break;
                 case 'L':
                     if (CheckPos(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R')) {
                         SaveShip(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R');
-                        flag = true;
+                        // flag = true;
                     } else
-                        flag = false;
-                    break;
+                    // flag = false;
+                        break;
                 case 'R':
                     if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
                         SaveShip(tempPointer, shipLengthArr[index], 'R');
-                        flag = true;
+                        // flag = true;
                     } else
-                        flag = false;
-                    break;
+                    // flag = false;
+                        break;
                 case 'X':
                     if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
                         SaveShip(tempPointer, shipLengthArr[index], 'R');
-                        flag = true;
+                        // flag = true;
                     } else
-                        flag = false;
-                    break;
+                    // flag = false;
+                        break;
                 default:
                     break;
             }
