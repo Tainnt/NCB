@@ -377,7 +377,7 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             }
             if (index != shipLengthArr.length && flag) {
                 socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
-            } else
+            } else if (index == shipLengthArr.length && !flag)
                 $("#btn").prop("disabled", false);
 
             tempPointer = 0;
