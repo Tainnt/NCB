@@ -1060,13 +1060,8 @@ io.on("connection", function(socket) {
             PHONGS.phong3 = [];
             phong[2] = PHONGS.phong3.length;
         }
-        var tempIndex = 0;
-        console.log("deleteId: " + deleteId);
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
-            if (SESSIONID[i] == deleteId[tempIndex]) {
-                console.log("delete user exit: " + deleteId[tempIndex]);
-                tempIndex++;
-                console.log("tempIndex: " + tempIndex);
+            if (deleteId.includes(SESSIONID[i])) {
                 STRUCT[i].setKeyVaoRoom(0);
                 STRUCT[i].setPlayAgain(0);
                 STRUCT[i].setTrangThai("room");
