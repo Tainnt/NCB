@@ -378,11 +378,13 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             } else {
                 muctieuctx.drawImage(error, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
             }
-            socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
+            if (index != shipLengthArr.length) {
+                socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
+            }
 
             tempPointer = 0;
             tempKey = 'X';
-            if (index == shipLengthArr.length /*&& songuoichoi == 2*/ ) {
+            if (index == shipLengthArr.length) {
                 $("#btn").prop("disabled", false);
             }
         }
