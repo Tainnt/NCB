@@ -294,9 +294,7 @@ socket.on("UpdateEnemy", function(data) {
     var element = document.getElementById('id_cua_doi_thu');
     element.innerHTML = ' ' + enemyla;
 });
-
 var flag = false;
-
 socket.on("RESYEUCAUCHECKSERVER", function(data) {
     enemyla = data.emENEMY;
     var element = document.getElementById('id_cua_doi_thu');
@@ -380,13 +378,14 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             }
             if (index != shipLengthArr.length) {
                 socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
-            }
+            } else
+                $("#btn").prop("disabled", false);
 
             tempPointer = 0;
             tempKey = 'X';
-            if (index == shipLengthArr.length) {
-                $("#btn").prop("disabled", false);
-            }
+            // if (index == shipLengthArr.length) {
+            //     $("#btn").prop("disabled", false);
+            // }
         }
     } else if (shotx == 0) {
         if (orientation) {
