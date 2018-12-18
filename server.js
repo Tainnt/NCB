@@ -1046,27 +1046,34 @@ io.on("connection", function(socket) {
     });
     socket.on('CLEAR', function(data) {
         //console.log(data);
-        for (var i = SESSIONID.length - 1; i >= 0; i--) {
-            STRUCT[i].setKeyVaoRoom(0);
-            STRUCT[i].setPlayAgain(0);
-            STRUCT[i].setTrangThai("login");
-            STRUCT[i].setShotCreat(0);
-            STRUCT[i].setKeyCreat(0);
-            STRUCT[i].setConTroPlayerFight(1);
-            STRUCT[i].setSangSang(0);
-            STRUCT[i].setShotFight(0);
-            STRUCT[i].setConTroPlayerCreat(0);
-
-        }
+        var deleteId = [];
         if (PHONGS.phong1.includes(data.COOKIE)) {
+            deleteId = PHONGS.phong1;
             PHONGS.phong1 = [];
             phong[0] = PHONGS.phong1.length;
         } else if (PHONGS.phong2.includes(data.COOKIE)) {
+            deleteId = PHONGS.phong2;
             PHONGS.phong2 = [];
             phong[1] = PHONGS.phong2.length;
         } else if (PHONGS.phong3.includes(data.COOKIE)) {
+            deleteId = PHONGS.phong3;
             PHONGS.phong3 = [];
             phong[2] = PHONGS.phong3.length;
+        }
+        var tempIndex = 0;
+        for (var i = SESSIONID.length - 1; i >= 0; i--) {
+            if (SESSIONID[i] == deleteId[tempIndex]) {
+                tempIndex++;
+                STRUCT[i].setKeyVaoRoom(0);
+                STRUCT[i].setPlayAgain(0);
+                STRUCT[i].setTrangThai("room");
+                STRUCT[i].setShotCreat(0);
+                STRUCT[i].setKeyCreat(0);
+                STRUCT[i].setConTroPlayerFight(1);
+                STRUCT[i].setSangSang(0);
+                STRUCT[i].setShotFight(0);
+                STRUCT[i].setConTroPlayerCreat(0);
+            }
         }
         io.sockets.emit('CLEAROK', {});
     });

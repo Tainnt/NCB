@@ -522,7 +522,7 @@ function PlayAgain() {
 }
 
 socket.on("RESPlayagain", function(data) {
-    console.log(data.emPlayAgain);
+    // console.log(data.emPlayAgain);
     // if (data.emPlayAgain == 1) {
     //     socket.emit('CLEAR', {});
 
