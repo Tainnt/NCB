@@ -269,7 +269,6 @@ $('#btn').on('click', function() {
     var element = document.getElementById('btn');
     element.innerHTML = 'Chờ người chơi khác...';
     $("#btn").prop("disabled", true);
-
 });
 
 $('#logout').on('click', function() {
@@ -296,153 +295,155 @@ socket.on("UpdateEnemy", function(data) {
 });
 var flag = false;
 socket.on("RESYEUCAUCHECKSERVER", function(data) {
-    enemyla = data.emENEMY;
-    var element = document.getElementById('id_cua_doi_thu');
-    element.innerHTML = ' ' + enemyla;
-    console.log(data);
-    shotx = data.emSHOTLAYERCREATE;
-    console.log("data.DATA: " + data.emPHONG[data.emVITRICONTROPHONG - 1]);
-    console.log("data.SHOT: " + shotx);
-    console.log("data.KEY: " + data.emKEYPLAYERCREATE);
-    if (data.emSS == 1) {
-        window.location = '/fight';
-    }
-    ////////Ham Xu Ly////////////////////////
-    var pt = Math.abs(data.emCONTROPLAYERCREATE) - 1;
-    if (shotx == 1) {
-        if (!orientation) {
-            orientation = true;
-            if (tempPointer == 0) {
-                tempPointer = pt;
-            }
-        } else {
-            orientation = false;
-            switch (tempKey) {
-                case 'U':
-                    if (CheckPos(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D')) {
-                        SaveShip(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D');
-                        flag = true;
-                    } else
-                        flag = false;
-                    break;
-                case 'D':
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'D')) {
-                        SaveShip(tempPointer, shipLengthArr[index], 'D');
-                        flag = true;
-                    } else
-                        flag = false;
-                    break;
-                case 'L':
-                    if (CheckPos(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R')) {
-                        SaveShip(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R');
-                        flag = true;
-                    } else
-                        flag = false;
-                    break;
-                case 'R':
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
-                        SaveShip(tempPointer, shipLengthArr[index], 'R');
-                        flag = true;
-                    } else
-                        flag = false;
-                    break;
-                case 'X':
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
-                        SaveShip(tempPointer, shipLengthArr[index], 'R');
-                        flag = true;
-                    } else
-                        flag = false;
-                    break;
-                default:
-                    break;
-            }
-
-            if (flag) {
-                label[4 - shipLengthArr[index]].innerHTML = Number(label[4 - shipLengthArr[index]].innerHTML) - 1;
-                index++;
-            }
-
-            if (Math.floor((tempPointer) / 10) != 9) {
-                tempPointer += 10;
-            } else if (Math.floor((tempPointer) / 10) == 9) {
-                tempPointer -= 10;
-            }
-
-            muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
-            LoadShip(0, 99);
-            if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
-                DrawShip(tempPointer, shipLengthArr[index], 'R');
-                muctieuctx.drawImage(pointer, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
-            } else {
-                muctieuctx.drawImage(error, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
-            }
-            if (index != shipLengthArr.length) {
-                socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
-            } else
-                $("#btn").prop("disabled", false);
-
-            tempPointer = 0;
-            tempKey = 'X';
-            // if (index == shipLengthArr.length) {
-            //     $("#btn").prop("disabled", false);
-            // }
+    if (data.COKI == getCookie("Bantausession")) {
+        enemyla = data.emENEMY;
+        var element = document.getElementById('id_cua_doi_thu');
+        element.innerHTML = ' ' + enemyla;
+        console.log(data);
+        shotx = data.emSHOTLAYERCREATE;
+        console.log("data.DATA: " + data.emPHONG[data.emVITRICONTROPHONG - 1]);
+        console.log("data.SHOT: " + shotx);
+        console.log("data.KEY: " + data.emKEYPLAYERCREATE);
+        if (data.emSS == 1) {
+            window.location = '/fight';
         }
-    } else if (shotx == 0) {
-        if (orientation) {
-            muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
-            LoadShip(0, 99);
-            var isFit = false;
-            tempKey = data.emKEYPLAYERCREATE;
-            switch (data.emKEYPLAYERCREATE) {
-                case 'U':
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'U')) {
-                        DrawShip(tempPointer, shipLengthArr[index], 'U');
-                        isFit = true;
-                    }
-                    break;
-                case 'D':
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'D')) {
-                        DrawShip(tempPointer, shipLengthArr[index], 'D');
-                        isFit = true;
-                    }
-                    break;
-                case "L":
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'L')) {
-                        DrawShip(tempPointer, shipLengthArr[index], 'L');
-                        isFit = true;
-                    }
-                    break;
-                case 'R':
-                    if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
-                        DrawShip(tempPointer, shipLengthArr[index], 'R');
-                        isFit = true;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            if (!isFit) {
-                muctieuctx.drawImage(error, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
-                isFit = true;
-            }
-        } else {
-            muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
-            LoadShip(0, 99);
-            if (CheckPos(pt, shipLengthArr[index], 'R')) {
-                DrawShip(pt, shipLengthArr[index], 'R');
-                muctieuctx.drawImage(pointer, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
+        ////////Ham Xu Ly////////////////////////
+        var pt = Math.abs(data.emCONTROPLAYERCREATE) - 1;
+        if (shotx == 1) {
+            if (!orientation) {
+                orientation = true;
+                if (tempPointer == 0) {
+                    tempPointer = pt;
+                }
             } else {
-                muctieuctx.drawImage(error, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
+                orientation = false;
+                switch (tempKey) {
+                    case 'U':
+                        if (CheckPos(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D')) {
+                            SaveShip(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D');
+                            flag = true;
+                        } else
+                            flag = false;
+                        break;
+                    case 'D':
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'D')) {
+                            SaveShip(tempPointer, shipLengthArr[index], 'D');
+                            flag = true;
+                        } else
+                            flag = false;
+                        break;
+                    case 'L':
+                        if (CheckPos(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R')) {
+                            SaveShip(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R');
+                            flag = true;
+                        } else
+                            flag = false;
+                        break;
+                    case 'R':
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
+                            SaveShip(tempPointer, shipLengthArr[index], 'R');
+                            flag = true;
+                        } else
+                            flag = false;
+                        break;
+                    case 'X':
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
+                            SaveShip(tempPointer, shipLengthArr[index], 'R');
+                            flag = true;
+                        } else
+                            flag = false;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (flag) {
+                    label[4 - shipLengthArr[index]].innerHTML = Number(label[4 - shipLengthArr[index]].innerHTML) - 1;
+                    index++;
+                }
+
+                if (Math.floor((tempPointer) / 10) != 9) {
+                    tempPointer += 10;
+                } else if (Math.floor((tempPointer) / 10) == 9) {
+                    tempPointer -= 10;
+                }
+
+                muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
+                LoadShip(0, 99);
+                if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
+                    DrawShip(tempPointer, shipLengthArr[index], 'R');
+                    muctieuctx.drawImage(pointer, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
+                } else {
+                    muctieuctx.drawImage(error, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
+                }
+                if (index != shipLengthArr.length) {
+                    socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
+                } else
+                    $("#btn").prop("disabled", false);
+
+                tempPointer = 0;
+                tempKey = 'X';
+                // if (index == shipLengthArr.length) {
+                //     $("#btn").prop("disabled", false);
+                // }
             }
+        } else if (shotx == 0) {
+            if (orientation) {
+                muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
+                LoadShip(0, 99);
+                var isFit = false;
+                tempKey = data.emKEYPLAYERCREATE;
+                switch (data.emKEYPLAYERCREATE) {
+                    case 'U':
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'U')) {
+                            DrawShip(tempPointer, shipLengthArr[index], 'U');
+                            isFit = true;
+                        }
+                        break;
+                    case 'D':
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'D')) {
+                            DrawShip(tempPointer, shipLengthArr[index], 'D');
+                            isFit = true;
+                        }
+                        break;
+                    case "L":
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'L')) {
+                            DrawShip(tempPointer, shipLengthArr[index], 'L');
+                            isFit = true;
+                        }
+                        break;
+                    case 'R':
+                        if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
+                            DrawShip(tempPointer, shipLengthArr[index], 'R');
+                            isFit = true;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                if (!isFit) {
+                    muctieuctx.drawImage(error, table[(tempPointer) % 10], table[Math.floor((tempPointer) / 10)], 60, 60);
+                    isFit = true;
+                }
+            } else {
+                muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
+                LoadShip(0, 99);
+                if (CheckPos(pt, shipLengthArr[index], 'R')) {
+                    DrawShip(pt, shipLengthArr[index], 'R');
+                    muctieuctx.drawImage(pointer, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
+                } else {
+                    muctieuctx.drawImage(error, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
+                }
+            }
+        } else if (shotx == -1 && shipPosArr[pt] != 'N') {
+            muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
+            var len = DeleteShip(pt);
+            shipLengthArr[shipLengthArr.length] = len;
+            label[4 - len].innerHTML = Number(label[4 - len].innerHTML) + 1;
+            LoadShip(0, 99);
+            muctieuctx.drawImage(pointer, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
+            $("#btn").prop("disabled", true);
         }
-    } else if (shotx == -1 && shipPosArr[pt] != 'N') {
-        muctieuctx.clearRect(0, 0, muctieu.width, muctieu.height);
-        var len = DeleteShip(pt);
-        shipLengthArr[shipLengthArr.length] = len;
-        label[4 - len].innerHTML = Number(label[4 - len].innerHTML) + 1;
-        LoadShip(0, 99);
-        muctieuctx.drawImage(pointer, table[(pt) % 10], table[Math.floor((pt) / 10)], 60, 60);
-        $("#btn").prop("disabled", true);
     }
 });
 // Get the button that opens the modal
