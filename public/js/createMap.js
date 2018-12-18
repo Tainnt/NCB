@@ -227,7 +227,7 @@ function DeleteShip(pt) {
 }
 
 //Ket noi den Socket server
-var socket = io.connect("http://doanncb.ddns.net:3000");
+var socket = io.connect("http://localhost:3000");
 var userla;
 var x = getCookie("Bantausession");
 var shotx = 0;
@@ -295,6 +295,8 @@ socket.on("UpdateEnemy", function(data) {
     element.innerHTML = ' ' + enemyla;
 });
 
+var flag = false;
+
 socket.on("RESYEUCAUCHECKSERVER", function(data) {
     enemyla = data.emENEMY;
     var element = document.getElementById('id_cua_doi_thu');
@@ -319,27 +321,48 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             orientation = false;
             switch (tempKey) {
                 case 'U':
-                    SaveShip(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D');
+                    if (CheckPos(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D')) {
+                        SaveShip(tempPointer - (shipLengthArr[index] - 1) * 10, shipLengthArr[index], 'D');
+                        flag = true;
+                    } else
+                        flag = false;
                     break;
                 case 'D':
-                    SaveShip(tempPointer, shipLengthArr[index], 'D');
+                    if (CheckPos(tempPointer, shipLengthArr[index], 'D')) {
+                        SaveShip(tempPointer, shipLengthArr[index], 'D');
+                        flag = true;
+                    } else
+                        flag = false;
                     break;
                 case 'L':
-                    SaveShip(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R');
+                    if (CheckPos(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R')) {
+                        SaveShip(tempPointer - (shipLengthArr[index] - 1), shipLengthArr[index], 'R');
+                        flag = true;
+                    } else
+                        flag = false;
                     break;
                 case 'R':
-                    SaveShip(tempPointer, shipLengthArr[index], 'R');
+                    if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
+                        SaveShip(tempPointer, shipLengthArr[index], 'R');
+                        flag = true;
+                    } else
+                        flag = false;
                     break;
                 case 'X':
-                    SaveShip(tempPointer, shipLengthArr[index], 'R');
+                    if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
+                        SaveShip(tempPointer, shipLengthArr[index], 'R');
+                        flag = true;
+                    } else
+                        flag = false;
                     break;
                 default:
                     break;
             }
 
-            label[4 - shipLengthArr[index]].innerHTML = Number(label[4 - shipLengthArr[index]].innerHTML) - 1;
-
-            index++;
+            if (flag) {
+                label[4 - shipLengthArr[index]].innerHTML = Number(label[4 - shipLengthArr[index]].innerHTML) - 1;
+                index++;
+            }
 
             if (Math.floor((tempPointer) / 10) != 9) {
                 tempPointer += 10;
