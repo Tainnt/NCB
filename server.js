@@ -1061,6 +1061,7 @@ io.on("connection", function(socket) {
             phong[2] = PHONGS.phong3.length;
         }
         var tempIndex = 0;
+        console.log("deleteId: " + deleteId);
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == deleteId[tempIndex]) {
                 tempIndex++;
