@@ -1006,7 +1006,7 @@ io.on("connection", function(socket) {
                     emSHOTENEMY: shotenemy,
                     emLUOT: luot,
                     emSHIPMAPENYMY: enymymap,
-                    COKI: data.COKI,
+
                 });
                 temp = 1;
             }
