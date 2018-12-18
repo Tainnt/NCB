@@ -351,7 +351,7 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
                 case 'X':
                     if (CheckPos(tempPointer, shipLengthArr[index], 'R')) {
                         SaveShip(tempPointer, shipLengthArr[index], 'R');
-                        // flag = true;
+                        flag = true;
                     } else
                     // flag = false;
                         break;
@@ -359,7 +359,7 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
                     break;
             }
 
-            if (flag) {
+            if (1) {
                 label[4 - shipLengthArr[index]].innerHTML = Number(label[4 - shipLengthArr[index]].innerHTML) - 1;
                 index++;
             }
