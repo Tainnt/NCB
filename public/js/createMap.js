@@ -289,15 +289,17 @@ console.log("orientation: " + orientation);
 var tempPointer = 0;
 var tempKey = 'X';
 
+socket.on("UpdateEnemy", function(data) {
+    enemyla = data;
+    var element = document.getElementById('id_cua_doi_thu');
+    element.innerHTML = ' ' + enemyla;
+});
+
 socket.on("RESYEUCAUCHECKSERVER", function(data) {
     enemyla = data.emENEMY;
     var element = document.getElementById('id_cua_doi_thu');
     element.innerHTML = ' ' + enemyla;
     console.log(data);
-    // if (data.emSHOTLAYERCREATE > SHOTLAYERCREATE) {
-    //     shotx = 1;
-    // } else { shotx = 0; }
-    // SHOTLAYERCREATE = data.emSHOTLAYERCREATE;
     shotx = data.emSHOTLAYERCREATE;
     console.log("data.DATA: " + data.emPHONG[data.emVITRICONTROPHONG - 1]);
     console.log("data.SHOT: " + shotx);

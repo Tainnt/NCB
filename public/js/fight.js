@@ -383,7 +383,7 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
         modal.style.display = "block";
     }
     if ((P1WIN == WIN) || (P2WIN == WIN)) {
-        setTimeout(myFunction, 3000);
+        setTimeout(myFunction, 1000);
     }
 });
 
@@ -523,15 +523,19 @@ function PlayAgain() {
 
 socket.on("RESPlayagain", function(data) {
     console.log(data.emPlayAgain);
-    if (data.emPlayAgain == 1) {
-        socket.emit('CLEAR', {});
+    // if (data.emPlayAgain == 1) {
+    //     socket.emit('CLEAR', {});
 
-    }
+    // }
+    socket.emit('CLEAR', { COOKIE: x });
 });
 socket.on("CLEAROK", function(data) {
-    window.location = '/create';
+    window.location = '/room';
 });
 
 $('#logout').on('click', function() {
-    window.location = '/logout';
+    // window.location = '/logout';
+    socket.emit('Playagain', {
+        COOKIE: x,
+    });
 });

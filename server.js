@@ -185,6 +185,18 @@ app.get('/logout', function(request, response) {
     console.log("gamepadArr: " + gamepadArr);
     io.sockets.emit("GamepadArr", { arr: gamepadArr, ss: checkID, id: userGamepad });
 
+    if (PHONGS.phong1.includes(request.sessionID)) {
+        PHONGS.phong1.splice(PHONGS.phong1.indexOf(request.sessionID), 1);
+        console.log("PHONGS.phong1: " + PHONGS.phong1);
+        phong[0] = PHONGS.phong1.length;
+    } else if (PHONGS.phong2.includes(request.sessionID)) {
+        PHONGS.phong2.splice(PHONGS.phong2.indexOf(request.sessionID), 1);
+        phong[1] = PHONGS.phong2.length;
+    } else if (PHONGS.phong3.includes(request.sessionID)) {
+        PHONGS.phong3.splice(PHONGS.phong3.indexOf(request.sessionID), 1);
+        phong[2] = PHONGS.phong3.length;
+    }
+    io.sockets.emit('UpdateEnemy', "Chưa có đối thủ");
     response.redirect('/');
 });
 
@@ -1012,7 +1024,7 @@ io.on("connection", function(socket) {
             if (SESSIONID[i] == data.COOKIE) {
                 STRUCT[i].setShipMap(data.Arr);
                 STRUCT[i].setSangSang(1);
-                console.log("SS cua thang vua gui" + STRUCT[i].sangsang + " " + data.COOKIE);
+                // console.log("SS cua thang vua gui" + STRUCT[i].sangsang + " " + data.COOKIE);
             }
         }
 
@@ -1022,7 +1034,7 @@ io.on("connection", function(socket) {
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
             if (SESSIONID[i] == data.COOKIE) {
                 STRUCT[i].setPlayAgain(1);
-                console.log("Playagain cua thang vua gui" + STRUCT[i].playagain + " " + data.COOKIE);
+                // console.log("Playagain cua thang vua gui" + STRUCT[i].playagain + " " + data.COOKIE);
                 var CHECKPA = CHECKPLAYAGAIN(data.COOKIE);
                 socket.emit('RESPlayagain', {
                     emPlayAgain: CHECKPA,
@@ -1035,17 +1047,28 @@ io.on("connection", function(socket) {
     socket.on('CLEAR', function(data) {
         //console.log(data);
         for (var i = SESSIONID.length - 1; i >= 0; i--) {
-
+            STRUCT[i].setKeyVaoRoom(0);
             STRUCT[i].setPlayAgain(0);
-            STRUCT[i].setTrangThai("create");
+            STRUCT[i].setTrangThai("login");
             STRUCT[i].setShotCreat(0);
             STRUCT[i].setKeyCreat(0);
             STRUCT[i].setConTroPlayerFight(1);
             STRUCT[i].setSangSang(0);
             STRUCT[i].setShotFight(0);
             STRUCT[i].setConTroPlayerCreat(0);
-            io.sockets.emit('CLEAROK', {});
+
         }
+        if (PHONGS.phong1.includes(data.COOKIE)) {
+            PHONGS.phong1 = [];
+            phong[0] = PHONGS.phong1.length;
+        } else if (PHONGS.phong2.includes(data.COOKIE)) {
+            PHONGS.phong2 = [];
+            phong[1] = PHONGS.phong2.length;
+        } else if (PHONGS.phong3.includes(data.COOKIE)) {
+            PHONGS.phong3 = [];
+            phong[2] = PHONGS.phong3.length;
+        }
+        io.sockets.emit('CLEAROK', {});
     });
 });
 //++++++++++++++++Function GAME++++++++++++++++++++++++++++++++++++++++++++++++++++
