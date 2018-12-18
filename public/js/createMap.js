@@ -377,10 +377,13 @@ socket.on("RESYEUCAUCHECKSERVER", function(data) {
             }
             if (index != shipLengthArr.length && flag) {
                 socket.emit('PointerChange', { pt: tempPointer, COKI: getCookie("Bantausession") });
-            } else
-                $("#btn").prop("disabled", false);
-            if ($("#btn").html() == 'Chờ người chơi khác...')
-                $("#btn").prop("disabled", true);
+            } else {
+                if ($("#btn").html() == 'Chờ người chơi khác...')
+                    $("#btn").prop("disabled", true);
+                else
+                    $("#btn").prop("disabled", false);
+            }
+
             tempPointer = 0;
             tempKey = 'X';
             // if (index == shipLengthArr.length) {
